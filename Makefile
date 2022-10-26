@@ -1,24 +1,37 @@
-INCLUDE_PATH = "/home/allwen66/ws/sv-JTracing/include/preprocessing/"
-SRC_PATH = "source/*.cpp"
-SRC_PATH += "source/preprocessing/*.cpp"
+INCLUDE_PATH = include/preprocessing/
+SRC_PATH = source/main.cpp
+SRC_PATH += source/preprocessing/SourceManager.cpp
 
-CC = /usr/bin/gcc-9
-CXX = /usr/bin/g++-9
+OFILE = main.o SourceManager.o
+
+Q = @
+COMPILE = /usr/bin/
+CC = ${Q}${COMPILE}gcc-9
+CXX = ${Q}${COMPILE}g++-9
+SIZE = ${Q}${COMPILE}size
 CFLAGS = -Wall '-std=c++17' -g
+
+LDFLAGS = -I${INCLUDE_PATH}
+CXXFLAGS = -I${INCLUDE_PATH} ${CFLAGS}
+
+ECHO = ${Q}echo
 
 TAR = svj
  
-svj: main.o SourceManager.o
-	echo "making ${TAR}!!"
-	${CXX} -I${INCLUDE_PATH} main.o SourceManager.o -o ${TAR}
+svj: ${OFILE}
+	${ECHO} "making ${TAR}!!"
+	${CXX} ${LDFLAGS} ${OFILE} -o ${TAR}
+	${SIZE} ${TAR}
 
 main.o: source/main.cpp
-	${CXX} -I${INCLUDE_PATH} ${CFLAGS} -c source/main.cpp -o main.o
+	${ECHO} "cxx main.cpp"
+	${CXX} ${CXXFLAGS} -c source/main.cpp -o main.o
 
 SourceManager.o: source/preprocessing/SourceManager.cpp
-	${CXX} -I${INCLUDE_PATH} ${CFLAGS} -c source/preprocessing/SourceManager.cpp -o SourceManager.o
+	${ECHO} "cxx SourceManager.cpp"
+	${CXX} ${CXXFLAGS} -c source/preprocessing/SourceManager.cpp -o SourceManager.o
 
 .PHONY : clean
 clean :
-	echo "cleaning"
+	${ECHO} "cleaning"
 	rm *.o ${TAR}
