@@ -8,16 +8,16 @@ std::string_view SourceManager::readSource(fs::path& filepath){
         perror("Error: Invaild filepath.\n");
         exit(-1); //修改为重新输入路径
     }
-    //if((string)filepath[])    //检测后缀三个字符是否为".sv"，从而增强健壮性
-    //string filename = filepath.filename().u8string();
-    cout<<filepath<<endl;
     fd.filename = filepath.filename().u8string();
-    cout<<fd.filename<<endl;
+    //检测后缀三个字符是否为".sv"，从而增强健壮性
+    if(fd.filename.substr(fd.filename.size()-3, fd.filename.size()-1) != ".sv"){
+        perror("Error: Not the .sv file.\n");
+        exit(-1);//修改为重新输入路径
+    }
     fd.filedirectory = filepath.string();
     std::ifstream stream(filepath, std::ios::binary);
     std::error_code ec;
     fd.filesize = fs::file_size(filepath, ec);
-    cout<<fd.filesize<<endl;
     vector<char> buffer;
     buffer.resize((size_t)fd.filesize + 1);
     if (!stream.read(buffer.data(), (std::streamsize)fd.filesize)){
