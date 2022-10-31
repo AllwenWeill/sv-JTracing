@@ -1,8 +1,10 @@
 INCLUDE_PATH = include/preprocessing/
+INCLUDE_PATH += include/parsing/
 SRC_PATH = source/main.cpp
 SRC_PATH += source/preprocessing/SourceManager.cpp
+SRC_PATH += source/parsing/Lexer.cpp
 
-OFILE = main.o SourceManager.o
+OFILE = main.o SourceManager.o Lexer.o
 
 Q = @
 COMPILE = /usr/bin/
@@ -30,6 +32,10 @@ main.o: source/main.cpp
 SourceManager.o: source/preprocessing/SourceManager.cpp
 	${ECHO} "cxx SourceManager.cpp"
 	${CXX} ${CXXFLAGS} -c source/preprocessing/SourceManager.cpp -o SourceManager.o
+
+Lexer.o: source/parsing/Lexer.cpp
+	${ECHO} "cxx Lexer.cpp"
+	${CXX} ${CXXFLAGS} -c source/parsing/Lexer.cpp -o Lexer.o
 
 .PHONY : clean
 clean :
