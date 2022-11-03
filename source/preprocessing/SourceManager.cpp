@@ -1,7 +1,7 @@
 #include "SourceManager.h"
 // function: 读取源代码.sv文件
 // param: .sv文件的绝对路径
-// return: 
+// return: 文本内容
 std::string_view SourceManager::readSource(fs::path& filepath){
     //判断.sv文件路径是否存在
     if(!fs::exists(filepath)){
