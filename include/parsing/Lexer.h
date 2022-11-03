@@ -1,6 +1,6 @@
-#include "include/utility/allinclude.h"
-#include "include/preprocessing/SourceManager.h"
-#include "include/utility/Allocator.h"
+#include "allinclude.h"
+#include "SourceManager.h"
+#include "Allocator.h"
 class Lexer{
 public:
     Lexer(const string_view *psm, unsigned long int indexOffset);
