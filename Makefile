@@ -1,5 +1,8 @@
-INCLUDE_PATH = include/preprocessing/
-INCLUDE_PATH += include/parsing/
+INCLUDE_PATH = -I./include/preprocessing/
+INCLUDE_PATH += -I./include/parsing/
+INCLUDE_PATH += -I./include/utility/
+INCLUDE_PATH += -I./include/syntax/
+
 SRC_PATH = source/main.cpp
 SRC_PATH += source/preprocessing/SourceManager.cpp
 SRC_PATH += source/parsing/Lexer.cpp
@@ -13,8 +16,8 @@ CXX = ${Q}${COMPILE}g++-9
 SIZE = ${Q}${COMPILE}size
 CFLAGS = -Wall '-std=c++17' -g
 
-LDFLAGS = -I${INCLUDE_PATH}
-CXXFLAGS = -I${INCLUDE_PATH} ${CFLAGS}
+LDFLAGS = ${INCLUDE_PATH}
+CXXFLAGS = ${INCLUDE_PATH} ${CFLAGS}
 
 ECHO = ${Q}echo
 
