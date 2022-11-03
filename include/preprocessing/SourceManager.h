@@ -13,10 +13,10 @@ struct FileData{
 };
 class SourceManager{
 public:
-    SourceManager(){};
-    std::string_view readSource(fs::path& filepath);
+    SourceManager(fs::path& filepath);
+    void readSource(fs::path& filepath);
     ~SourceManager(){};
     FileData fd;
 private:
-    
+    fs::path m_filepath; //文件路径
 };

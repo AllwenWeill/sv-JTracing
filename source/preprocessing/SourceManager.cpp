@@ -1,8 +1,14 @@
 #include "SourceManager.h"
+namespace fs = std::filesystem;
+SourceManager::SourceManager(fs::path& filepath):
+    m_filepath(filepath)
+{
+    readSource(m_filepath);
+}
 // function: 读取源代码.sv文件
 // param: .sv文件的绝对路径
 // return: 文本内容
-std::string_view SourceManager::readSource(fs::path& filepath){
+void SourceManager::readSource(fs::path& filepath){
     //判断.sv文件路径是否存在
     if(!fs::exists(filepath)){
         perror("Error: Invaild filepath.\n");
@@ -26,5 +32,4 @@ std::string_view SourceManager::readSource(fs::path& filepath){
     }
     fd.filememo = string_view(buffer.data(), buffer.size());
     cout<<fd.filememo<<endl;
-    return fd.filememo;
 }

@@ -1,16 +1,18 @@
-#include "include/parsing/Lexer.h"
+#include "Lexer.h"
 Lexer::Lexer(const string_view *psm, unsigned long int indexOffset)
     :m_psm(psm),
     init_psm(psm),
     m_indexOffset(indexOffset)
 {
-    vector<string> keywords(0);
-    unsigned long int count = 0;
+    offset_count = 0;
 }
 void Lexer::scanText(){
     string tempStr;
-    while(!islastChar){
-        char tempCh = (*m_psm).at(count);
+    cout<<*m_psm<<endl;
+    while(!islastChar()){
+        char tempCh = (*m_psm).at(offset_count);
+        cout<<"tempCh:"<<tempCh<<endl;
+        // cout<<"offset:"<<offset_count<<endl;
         switch (tempCh){
             case ' ':
             case '\t':
@@ -25,7 +27,7 @@ void Lexer::scanText(){
                 break;
             case '/':
                 advance();
-                tempCh = (*m_psm).at(count);
+                tempCh = (*m_psm).at(offset_count);
                 switch (tempCh)
                 {
                 case '*':   //块注释
@@ -44,22 +46,26 @@ void Lexer::scanText(){
         }
     }
     cout<<"test:打印keywords所有元素"<<endl;
-    for(string str : keywords)
-        cout<<str<<" ";
+    for(string str : keywords){
+        for(auto ch : str)
+            printf("%x ", ch);
+        cout<<str<<endl;
+        cout<<endl;
+    }
 }
 void Lexer::advance(){
-    m_psm++;
+    offset_count++;
 }
 void Lexer::advance(int count){
-    m_psm += count;
+    offset_count += count;
 }
 bool Lexer::islastChar(){//用'/0'也可以判断，但是不够
-    return m_psm >= (init_psm + m_indexOffset) ? true : false;
+    return offset_count >= m_indexOffset;
 }
 void Lexer::scanBlockComment(){
     while(true){
-        char tempCh = (*m_psm).at(count);
-        if (tempCh == '*' && (*m_psm).at(count+1) == '/') { //此处count+1有越界风险
+        char tempCh = (*m_psm).at(offset_count);
+        if (tempCh == '*' && (*m_psm).at(offset_count+1) == '/') { //此处offset_count+1有越界风险
             advance(2);
             break;
         } 
@@ -73,8 +79,8 @@ void Lexer::scanBlockComment(){
 }
 void Lexer::scanLineComment(){
     while (true) {
-        char tempCh = (*m_psm).at(count);
-        if (tempCh == '/r' && (*m_psm).at(count+1) == '/n') {
+        char tempCh = (*m_psm).at(offset_count);
+        if (tempCh == 0x0a) {//0x0a表示换行
             advance(1);
             break;
         }
@@ -85,4 +91,7 @@ void Lexer::scanLineComment(){
             advance();
         }
     }
+}
+Lexer::~Lexer(){
+    
 }

@@ -17,7 +17,7 @@ private:
     void advance(int count);
     bool islastChar();
     unsigned long int m_indexOffset;
-    unsigned long int count;
+    unsigned long int offset_count;
     void scanBlockComment();//即用"/*",用"/*"来注释需要以"*/"来结尾，因此需扫描到末尾"*/"来跳过注释
     void scanLineComment();//即用"//",用"//"来注释则一整行均被注释，因此需扫描换行符为本行尾部来跳过注释
 };
