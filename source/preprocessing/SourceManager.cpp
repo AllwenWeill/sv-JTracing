@@ -4,10 +4,12 @@ SourceManager::SourceManager(fs::path& filepath):
     m_filepath(filepath)
 {
     readSource(m_filepath);
+    cout<<"构造中显示："<<endl;
+    cout<<fd.filememo<<endl;
 }
 // function: 读取源代码.sv文件
-// param: .sv文件的绝对路径
-// return: 文本内容
+// param: .sv文件的路径
+// return: null
 void SourceManager::readSource(fs::path& filepath){
     //判断.sv文件路径是否存在
     if(!fs::exists(filepath)){
@@ -15,7 +17,7 @@ void SourceManager::readSource(fs::path& filepath){
         exit(-1); //修改为重新输入路径
     }
     fd.filename = filepath.filename().u8string();
-    //检测后缀三个字符是否为".sv"，从而增强健壮性
+    //检测后缀三个字符是否为".sv"
     if(fd.filename.substr(fd.filename.size()-3, fd.filename.size()-1) != ".sv"){
         perror("Error: Not the .sv file.\n");
         exit(-1);//修改为重新输入路径
@@ -30,6 +32,6 @@ void SourceManager::readSource(fs::path& filepath){
         perror("stream read failed!\n");
         exit(-1); 
     }
-    fd.filememo = string_view(buffer.data(), buffer.size());
+    fd.filememo = string(buffer.begin(), buffer.end());
     cout<<fd.filememo<<endl;
 }

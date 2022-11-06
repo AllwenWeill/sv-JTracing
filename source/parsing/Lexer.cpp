@@ -1,5 +1,5 @@
 #include "Lexer.h"
-Lexer::Lexer(const string_view *psm, unsigned long int indexOffset)
+Lexer::Lexer(const string *psm, unsigned long int indexOffset)
     :m_psm(psm),
     init_psm(psm),
     m_indexOffset(indexOffset)
@@ -11,7 +11,7 @@ void Lexer::scanText(){
     cout<<*m_psm<<endl;
     while(!islastChar()){
         char tempCh = (*m_psm).at(offset_count);
-        cout<<"tempCh:"<<tempCh<<endl;
+        //cout<<"tempCh:"<<tempCh<<endl;
         // cout<<"offset:"<<offset_count<<endl;
         switch (tempCh){
             case ' ':
@@ -47,10 +47,9 @@ void Lexer::scanText(){
     }
     cout<<"test:打印keywords所有元素"<<endl;
     for(string str : keywords){
-        for(auto ch : str)
-            printf("%x ", ch);
-        cout<<str<<endl;
-        cout<<endl;
+        // for(auto ch : str)
+        //     printf("%x ", ch);
+        cout<<str<<" "<<endl;
     }
 }
 void Lexer::advance(){

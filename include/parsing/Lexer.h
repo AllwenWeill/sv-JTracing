@@ -3,7 +3,7 @@
 #include "Allocator.h"
 class Lexer{
 public:
-    Lexer(const string_view *psm, unsigned long int indexOffset);
+    Lexer(const string *psm, unsigned long int indexOffset);
     // Not copyable
     Lexer(const Lexer&) = delete;
     Lexer& operator=(const Lexer&) = delete;
@@ -11,8 +11,8 @@ public:
     void scanText();
 private:
     vector<string> keywords;
-    const string_view *m_psm; //指向文本指针的副本指针
-    const string_view *init_psm;
+    const string *m_psm; //指向文本指针的副本指针
+    const string *init_psm;
     void advance();
     void advance(int count);
     bool islastChar();

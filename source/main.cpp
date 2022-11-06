@@ -5,7 +5,9 @@ int main(int argc, char* argv[]){
     fs::path fp;
     cin>>fp;
     SourceManager SM(fp);
-    string_view *psm = &SM.fd.filememo;
+    string *psm = &SM.fd.filememo;
+    cout<<*psm<<endl;
+    cout<<"------------"<<endl;
     cout<<SM.fd.filememo<<endl;
     cout<<"------------"<<endl;
     Lexer lex(psm, SM.fd.filesize);
