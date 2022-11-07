@@ -6,17 +6,18 @@
 using namespace std;
 namespace fs = std::filesystem;
 struct FileData{
-    string_view filename; //文件名
-    string_view filememo; //文件内容
-    string_view filedirectory; //文件目录
+    string filename; //文件名
+    string filememo; //文件内容
+    string filedirectory; //文件目录
     unsigned long int filesize; //文件大小
 };
 class SourceManager{
 public:
-    SourceManager(){};
-    std::string_view readSource(fs::path& filepath);
-    ~SourceManager(){};
     FileData fd;
-private:
+    SourceManager(fs::path& filepath);
+    void readSource(fs::path& filepath);
+    ~SourceManager(){};
     
+private:
+    fs::path m_filepath; //文件路径
 };
