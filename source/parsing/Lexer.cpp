@@ -275,7 +275,7 @@ void Lexer::scanLetter(){
         }
     }
 }
-void Lexer::scanNumber(){ //需要区分小数点
+void Lexer::scanNumber(){ //需要区分小数点(也可能不用区分，只需要识别小数点即可)
     bool isDecimal = false;
     string tmpStr;
     tmpStr.push_back((*m_psm).at(offset_count));
