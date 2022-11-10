@@ -12,6 +12,5 @@ int main(int argc, char* argv[]){
     cout<<"------------"<<endl;
     Lexer lex(psm, SM.fd.filesize);
     cout<<endl;
-    lex.scanText();
     return 0;
 }
