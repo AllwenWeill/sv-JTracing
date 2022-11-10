@@ -1,16 +1,11 @@
 #include "allinclude.h"
-class TokenKind{
-public:
-    TokenKind();
-    ~TokenKind();
-private:
-};
-enum class SLANG_EXPORT TokenKind : uint16_t {
+
+enum class TokenKind : std::uint16_t{
     Unknown,
     EndOfFile,
     Identifier,
     SystemIdentifier,
-    StringLiteral,
+    StringLiteral, //字符串
     IntegerLiteral,                                                                                                                                                                            
     IntegerBase,
     UnbasedUnsizedLiteral,
@@ -90,7 +85,7 @@ enum class SLANG_EXPORT TokenKind : uint16_t {
     LessThanMinusArrow,
     GreaterThan,
     GreaterThanEquals,
-    Or,
+    Or, //|
     DoubleOr,
     OrMinusArrow,
     OrEqualsArrow,
