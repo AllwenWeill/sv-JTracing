@@ -104,10 +104,10 @@ void Lexer::scanText(){
                     keywords.push_back(tempStr);
                     tempStr.clear();
                     tempStr.push_back(tempCh);
+                    advance();
+                    char nextCh = (*m_psm).at(offset_count);
                     switch (tempCh)
                     {
-                        advance();
-                        char nextCh = (*m_psm).at(offset_count);
                     case '=':
                         if(nextCh == '='){ //==
                             tokenVector.push_back(create(TokenKind::DoubleEquals, lineNum, keywords.size()-1, "=="));
@@ -168,6 +168,7 @@ void Lexer::scanText(){
                             break;
                         }
                     default: 
+                        break;
                     }
                 }
         }
@@ -270,7 +271,9 @@ void Lexer::scanLetter(){
         char tempCh = (*m_psm).at(offset_count);
         if(tempCh == ' ' || tempCh == 0x0a){ //如果遇到空格或者换行
             keywords.push_back(tmpStr);
-            tokenVector.push_back(create(,,,tmpStr)); //初步创建Token
+            TokenKind kind;
+            lookupKeyword(tmpStr, kind);
+            tokenVector.push_back(create(kind, lineNum, keywords.size()-1, tmpStr)); //初步创建Token
             return ;
         }
     }
@@ -295,5 +298,276 @@ void Lexer::scanNumber(){ //需要区分小数点(也可能不用区分，只需
             }
             return ;
         }
+    }
+}
+bool Lexer::lookupKeyword(string targetStr, TokenKind &kind){ //查找目标子字符串是否为关键字
+    //std::initializer_list<std::pair<string_view, TokenKind>> allKeywords = {KEYWORDS_1364_1995};
+    unordered_map<string_view, TokenKind> allKeywords_map = {KEYWORDS_1364_1995};
+    if(allKeywords_map.count(targetStr)){ //如果存在在关键字map中
+        kind = allKeywords_map[targetStr];
+        return true;
+    }
+    else{
+        kind = TokenKind::StringLiteral; //说明是普通字符串
+    }
+    return false;
+} 
+
+
+
+bool Lexer::isKeyword(TokenKind kind) {
+    switch (kind) {
+        case TokenKind::OneStep:
+        case TokenKind::AcceptOnKeyword:
+        case TokenKind::AliasKeyword:
+        case TokenKind::AlwaysKeyword:
+        case TokenKind::AlwaysCombKeyword:
+        case TokenKind::AlwaysFFKeyword:
+        case TokenKind::AlwaysLatchKeyword:
+        case TokenKind::AndKeyword:
+        case TokenKind::AssertKeyword:
+        case TokenKind::AssignKeyword:
+        case TokenKind::AssumeKeyword:
+        case TokenKind::AutomaticKeyword:
+        case TokenKind::BeforeKeyword:
+        case TokenKind::BeginKeyword:
+        case TokenKind::BindKeyword:
+        case TokenKind::BinsKeyword:
+        case TokenKind::BinsOfKeyword:
+        case TokenKind::BitKeyword:
+        case TokenKind::BreakKeyword:
+        case TokenKind::BufKeyword:
+        case TokenKind::BufIf0Keyword:
+        case TokenKind::BufIf1Keyword:
+        case TokenKind::ByteKeyword:
+        case TokenKind::CaseKeyword:
+        case TokenKind::CaseXKeyword:
+        case TokenKind::CaseZKeyword:
+        case TokenKind::CellKeyword:
+        case TokenKind::CHandleKeyword:
+        case TokenKind::CheckerKeyword:
+        case TokenKind::ClassKeyword:
+        case TokenKind::ClockingKeyword:
+        case TokenKind::CmosKeyword:
+        case TokenKind::ConfigKeyword:
+        case TokenKind::ConstKeyword:
+        case TokenKind::ConstraintKeyword:
+        case TokenKind::ContextKeyword:
+        case TokenKind::ContinueKeyword:
+        case TokenKind::CoverKeyword:
+        case TokenKind::CoverGroupKeyword:
+        case TokenKind::CoverPointKeyword:
+        case TokenKind::CrossKeyword:
+        case TokenKind::DeassignKeyword:
+        case TokenKind::DefaultKeyword:
+        case TokenKind::DefParamKeyword:
+        case TokenKind::DesignKeyword:
+        case TokenKind::DisableKeyword:
+        case TokenKind::DistKeyword:
+        case TokenKind::DoKeyword:
+        case TokenKind::EdgeKeyword:
+        case TokenKind::ElseKeyword:
+        case TokenKind::EndKeyword:
+        case TokenKind::EndCaseKeyword:
+        case TokenKind::EndCheckerKeyword:
+        case TokenKind::EndClassKeyword:
+        case TokenKind::EndClockingKeyword:
+        case TokenKind::EndConfigKeyword:
+        case TokenKind::EndFunctionKeyword:
+        case TokenKind::EndGenerateKeyword:
+        case TokenKind::EndGroupKeyword:
+        case TokenKind::EndInterfaceKeyword:
+        case TokenKind::EndModuleKeyword:
+        case TokenKind::EndPackageKeyword:
+        case TokenKind::EndPrimitiveKeyword:
+        case TokenKind::EndProgramKeyword:
+        case TokenKind::EndPropertyKeyword:
+        case TokenKind::EndSpecifyKeyword:
+        case TokenKind::EndSequenceKeyword:
+        case TokenKind::EndTableKeyword:
+        case TokenKind::EndTaskKeyword:
+        case TokenKind::EnumKeyword:
+        case TokenKind::EventKeyword:
+        case TokenKind::EventuallyKeyword:
+        case TokenKind::ExpectKeyword:
+        case TokenKind::ExportKeyword:
+        case TokenKind::ExtendsKeyword:
+        case TokenKind::ExternKeyword:
+        case TokenKind::FinalKeyword:
+        case TokenKind::FirstMatchKeyword:
+        case TokenKind::ForKeyword:
+        case TokenKind::ForceKeyword:
+        case TokenKind::ForeachKeyword:
+        case TokenKind::ForeverKeyword:
+        case TokenKind::ForkKeyword:
+        case TokenKind::ForkJoinKeyword:
+        case TokenKind::FunctionKeyword:
+        case TokenKind::GenerateKeyword:
+        case TokenKind::GenVarKeyword:
+        case TokenKind::GlobalKeyword:
+        case TokenKind::HighZ0Keyword:
+        case TokenKind::HighZ1Keyword:
+        case TokenKind::IfKeyword:
+        case TokenKind::IffKeyword:
+        case TokenKind::IfNoneKeyword:
+        case TokenKind::IgnoreBinsKeyword:
+        case TokenKind::IllegalBinsKeyword:
+        case TokenKind::ImplementsKeyword:
+        case TokenKind::ImpliesKeyword:
+        case TokenKind::ImportKeyword:
+        case TokenKind::IncDirKeyword:
+        case TokenKind::IncludeKeyword:
+        case TokenKind::InitialKeyword:
+        case TokenKind::InOutKeyword:
+        case TokenKind::InputKeyword:
+        case TokenKind::InsideKeyword:
+        case TokenKind::InstanceKeyword:
+        case TokenKind::IntKeyword:
+        case TokenKind::IntegerKeyword:
+        case TokenKind::InterconnectKeyword:
+        case TokenKind::InterfaceKeyword:
+        case TokenKind::IntersectKeyword:
+        case TokenKind::JoinKeyword:
+        case TokenKind::JoinAnyKeyword:
+        case TokenKind::JoinNoneKeyword:
+        case TokenKind::LargeKeyword:
+        case TokenKind::LetKeyword:
+        case TokenKind::LibListKeyword:
+        case TokenKind::LibraryKeyword:
+        case TokenKind::LocalKeyword:
+        case TokenKind::LocalParamKeyword:
+        case TokenKind::LogicKeyword:
+        case TokenKind::LongIntKeyword:
+        case TokenKind::MacromoduleKeyword:
+        case TokenKind::MatchesKeyword:
+        case TokenKind::MediumKeyword:
+        case TokenKind::ModPortKeyword:
+        case TokenKind::ModuleKeyword:
+        case TokenKind::NandKeyword:
+        case TokenKind::NegEdgeKeyword:
+        case TokenKind::NetTypeKeyword:
+        case TokenKind::NewKeyword:
+        case TokenKind::NextTimeKeyword:
+        case TokenKind::NmosKeyword:
+        case TokenKind::NorKeyword:
+        case TokenKind::NoShowCancelledKeyword:
+        case TokenKind::NotKeyword:
+        case TokenKind::NotIf0Keyword:
+        case TokenKind::NotIf1Keyword:
+        case TokenKind::NullKeyword:
+        case TokenKind::OrKeyword:
+        case TokenKind::OutputKeyword:
+        case TokenKind::PackageKeyword:
+        case TokenKind::PackedKeyword:
+        case TokenKind::ParameterKeyword:
+        case TokenKind::PmosKeyword:
+        case TokenKind::PosEdgeKeyword:
+        case TokenKind::PrimitiveKeyword:
+        case TokenKind::PriorityKeyword:
+        case TokenKind::ProgramKeyword:
+        case TokenKind::PropertyKeyword:
+        case TokenKind::ProtectedKeyword:
+        case TokenKind::Pull0Keyword:
+        case TokenKind::Pull1Keyword:
+        case TokenKind::PullDownKeyword:
+        case TokenKind::PullUpKeyword:
+        case TokenKind::PulseStyleOnDetectKeyword:
+        case TokenKind::PulseStyleOnEventKeyword:
+        case TokenKind::PureKeyword:
+        case TokenKind::RandKeyword:
+        case TokenKind::RandCKeyword:
+        case TokenKind::RandCaseKeyword:
+        case TokenKind::RandSequenceKeyword:
+        case TokenKind::RcmosKeyword:
+        case TokenKind::RealKeyword:
+        case TokenKind::RealTimeKeyword:
+        case TokenKind::RefKeyword:
+        case TokenKind::RegKeyword:
+        case TokenKind::RejectOnKeyword:
+        case TokenKind::ReleaseKeyword:
+        case TokenKind::RepeatKeyword:
+        case TokenKind::RestrictKeyword:
+        case TokenKind::ReturnKeyword:
+        case TokenKind::RnmosKeyword:
+        case TokenKind::RpmosKeyword:
+        case TokenKind::RtranKeyword:
+        case TokenKind::RtranIf0Keyword:
+        case TokenKind::RtranIf1Keyword:
+        case TokenKind::SAlwaysKeyword:
+        case TokenKind::SEventuallyKeyword:
+        case TokenKind::SNextTimeKeyword:
+        case TokenKind::SUntilKeyword:
+        case TokenKind::SUntilWithKeyword:
+        case TokenKind::ScalaredKeyword:
+        case TokenKind::SequenceKeyword:
+        case TokenKind::ShortIntKeyword:
+        case TokenKind::ShortRealKeyword:
+        case TokenKind::ShowCancelledKeyword:
+        case TokenKind::SignedKeyword:
+        case TokenKind::SmallKeyword:
+        case TokenKind::SoftKeyword:
+        case TokenKind::SolveKeyword:
+        case TokenKind::SpecifyKeyword:
+        case TokenKind::SpecParamKeyword:
+        case TokenKind::StaticKeyword:
+        case TokenKind::StringKeyword:
+        case TokenKind::StrongKeyword:
+        case TokenKind::Strong0Keyword:
+        case TokenKind::Strong1Keyword:
+        case TokenKind::StructKeyword:
+        case TokenKind::SuperKeyword:
+        case TokenKind::Supply0Keyword:
+        case TokenKind::Supply1Keyword:
+        case TokenKind::SyncAcceptOnKeyword:
+        case TokenKind::SyncRejectOnKeyword:
+        case TokenKind::TableKeyword:
+        case TokenKind::TaggedKeyword:
+        case TokenKind::TaskKeyword:
+        case TokenKind::ThisKeyword:
+        case TokenKind::ThroughoutKeyword:
+        case TokenKind::TimeKeyword:
+        case TokenKind::TimePrecisionKeyword:
+        case TokenKind::TimeUnitKeyword:
+        case TokenKind::TranKeyword:
+        case TokenKind::TranIf0Keyword:
+        case TokenKind::TranIf1Keyword:
+        case TokenKind::TriKeyword:
+        case TokenKind::Tri0Keyword:
+        case TokenKind::Tri1Keyword:
+        case TokenKind::TriAndKeyword:
+        case TokenKind::TriOrKeyword:
+        case TokenKind::TriRegKeyword:
+        case TokenKind::TypeKeyword:
+        case TokenKind::TypedefKeyword:
+        case TokenKind::UnionKeyword:
+        case TokenKind::UniqueKeyword:
+        case TokenKind::Unique0Keyword:
+        case TokenKind::UnsignedKeyword:
+        case TokenKind::UntilKeyword:
+        case TokenKind::UntilWithKeyword:
+        case TokenKind::UntypedKeyword:
+        case TokenKind::UseKeyword:
+        case TokenKind::UWireKeyword:
+        case TokenKind::VarKeyword:
+        case TokenKind::VectoredKeyword:
+        case TokenKind::VirtualKeyword:
+        case TokenKind::VoidKeyword:
+        case TokenKind::WaitKeyword:
+        case TokenKind::WaitOrderKeyword:
+        case TokenKind::WAndKeyword:
+        case TokenKind::WeakKeyword:
+        case TokenKind::Weak0Keyword:
+        case TokenKind::Weak1Keyword:
+        case TokenKind::WhileKeyword:
+        case TokenKind::WildcardKeyword:
+        case TokenKind::WireKeyword:
+        case TokenKind::WithKeyword:
+        case TokenKind::WithinKeyword:
+        case TokenKind::WOrKeyword:
+        case TokenKind::XnorKeyword:
+        case TokenKind::XorKeyword:
+            return true;
+        default:
+            return false;
     }
 }
