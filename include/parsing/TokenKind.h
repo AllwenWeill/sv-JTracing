@@ -1,3 +1,5 @@
+#ifndef TOKENKIND_H
+#define TOKENKIND_H
 #include "allinclude.h"
 
 enum class TokenKind : std::uint16_t{
@@ -354,3 +356,4 @@ enum class TokenKind : std::uint16_t{
     EmptyMacroArgument,
     LineContinuation,
 };
+#endif

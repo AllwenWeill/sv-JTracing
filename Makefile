@@ -7,8 +7,9 @@ INCLUDE_PATH += -I./include/syntax/
 SRC_PATH = source/main.cpp
 SRC_PATH += source/preprocessing/SourceManager.cpp
 SRC_PATH += source/parsing/Lexer.cpp
+SRC_PATH += source/parsing/Token.cpp
 
-OFILE = main.o SourceManager.o Lexer.o
+OFILE = main.o SourceManager.o Lexer.o Token.o
 
 Q = @
 COMPILE = /usr/bin/
@@ -40,6 +41,10 @@ SourceManager.o: source/preprocessing/SourceManager.cpp
 Lexer.o: source/parsing/Lexer.cpp
 	${ECHO} "cxx Lexer.cpp"
 	${CXX} ${CXXFLAGS} -c source/parsing/Lexer.cpp -o Lexer.o
+
+Token.o: source/parsing/Token.cpp
+	${ECHO} "cxx Token.cpp"
+	${CXX} ${CXXFLAGS} -c source/parsing/Token.cpp -o Token.o
 
 .PHONY : clean
 clean :

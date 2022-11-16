@@ -3,6 +3,7 @@
 #include "Allocator.h"
 #include "Token.h"
 #include "TokenKind.h"
+#include "keywordsDefine.h"
 class Lexer{
 public:
     Lexer(const string *psm, unsigned long int indexOffset);
@@ -11,6 +12,7 @@ public:
     Lexer& operator=(const Lexer&) = delete;
     ~Lexer();
     void scanText();
+    static bool isKeyword(TokenKind kind);
 private:
     vector<string> keywords;
     vector<Token> tokenVector;
@@ -28,6 +30,7 @@ private:
     void scanLetter(); //连续扫描当前字母串
     void scanNumber(); //连续扫描当前数字串，注意区分小数点
     Token create(TokenKind kind, int tokenLine, int tokenNum, string tokenString);
+    bool lookupKeyword(string targetStr, TokenKind &kind); //查找目标子字符串是否为关键字
 };
 bool isChar(const char &ch);
 bool isNum(const char &ch);
