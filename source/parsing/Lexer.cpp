@@ -50,16 +50,17 @@ void Lexer::scanText(){
                 default:  //说明仅有"/"，需要产生error信息
                     break;
                 }
+                break;
             default:  //说明为普通文字字符，而非空格注释等trivial things
                 if(isChar(tempCh)){ //如果是字母（关键字，变量名称，字符串）
                     scanLetter(); //连续扫描当前字母串
                     break;
                 }
-                if(isNum(tempCh)){ //如果是数字
+                else if(isNum(tempCh)){ //如果是数字
                     scanNumber(); //连续扫描当前数字串，注意区分小数点
                     break;
                 }
-                if(isOperator(tempCh)){ //如果是运算符
+                else if(isOperator(tempCh)){ //如果是运算符
                     switch(tempCh)
                     {
                         keywords.push_back(tempStr);
@@ -100,7 +101,7 @@ void Lexer::scanText(){
                             exit(-1);
                     }
                 }
-                if(isCmpOperator(tempCh)){ //如果是比较符
+                else if(isCmpOperator(tempCh)){ //如果是比较符
                     keywords.push_back(tempStr);
                     tempStr.clear();
                     tempStr.push_back(tempCh);
@@ -171,6 +172,9 @@ void Lexer::scanText(){
                         break;
                     }
                 }
+                else{
+                    advance();
+                }
         }
     }
     cout<<"test:打印keywords所有元素"<<endl;
@@ -178,6 +182,10 @@ void Lexer::scanText(){
         // for(auto ch : str)
         //     printf("%x ", ch);
         cout<<str<<" "<<endl;
+    }
+    cout<<"TokenKind:------------"<<endl;
+    for(auto k : tokenVector){
+        cout<<k.getTokenStr()<<":"<<k.getTokenKind()<<"行号:"<<k.TL.m_tokenLine<<endl;
     }
 }
 void Lexer::advance(){
@@ -208,6 +216,7 @@ void Lexer::scanLineComment(){
     while (true) {
         char tempCh = (*m_psm).at(offset_count);
         if (tempCh == 0x0a) {//0x0a表示换行
+            lineNum++;
             advance(1);
             break;
         }
@@ -226,7 +235,7 @@ Lexer::~Lexer(){
     
 }
 bool isChar(const char &ch){
-    if((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z'))
+    if((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || ch == '_' || ch == '.')
         return true;
     else
         return false;
@@ -269,12 +278,15 @@ void Lexer::scanLetter(){
     while(true){
         advance();
         char tempCh = (*m_psm).at(offset_count);
-        if(tempCh == ' ' || tempCh == 0x0a){ //如果遇到空格或者换行
+        if(tempCh == ' ' || tempCh == 0x0a || !isChar(tempCh)){ //如果遇到空格或者换行
             keywords.push_back(tmpStr);
             TokenKind kind;
             lookupKeyword(tmpStr, kind);
             tokenVector.push_back(create(kind, lineNum, keywords.size()-1, tmpStr)); //初步创建Token
             return ;
+        }
+        else{
+            tmpStr.push_back(tempCh);
         }
     }
 }
@@ -288,7 +300,7 @@ void Lexer::scanNumber(){ //需要区分小数点(也可能不用区分，只需
         if(tempCh == '.'){
             isDecimal = true;
         }
-        if(tempCh == ' ' || tempCh == 0x0a){ //如果遇到空格或者换行
+        else if(tempCh == ' ' || tempCh == 0x0a || isNum(tempCh)){ //如果遇到空格或者换行
             keywords.push_back(tmpStr);
             if(isDecimal){
                 tokenVector.push_back(create(TokenKind::IntegerLiteral, lineNum, keywords.size()-1, tmpStr)); //添加小数Token，好像不用区分小数
