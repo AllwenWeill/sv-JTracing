@@ -3,7 +3,7 @@
 
 module m;
     // hello
-    string s = `FOO;
+    string s = "FOO";
 
     begin end
 endmodule

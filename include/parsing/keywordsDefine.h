@@ -248,4 +248,5 @@
     { "implements", TokenKind::ImplementsKeyword },\
     { "interconnect", TokenKind::InterconnectKeyword },\
     { "nettype", TokenKind::NetTypeKeyword },\
+    { "define", TokenKind::DefineKeyword },\
     { "soft", TokenKind::SoftKeyword }

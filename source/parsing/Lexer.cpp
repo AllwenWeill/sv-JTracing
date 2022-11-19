@@ -52,9 +52,13 @@ void Lexer::scanText(){
                 }
                 break;
             default:  //说明为普通文字字符，而非空格注释等trivial things
-                if(isChar(tempCh)){ //如果是字母（关键字，变量名称，字符串）
+                if(isChar(tempCh)){ //如果是字母（关键字，变量名称）
                     scanLetter(); //连续扫描当前字母串
                     break;
+                }
+                else if(tempCh == '"'){ //如果是双引号，则为字符串文本
+                    scanString(); //连续扫描字符串
+                    advance();
                 }
                 else if(isNum(tempCh)){ //如果是数字
                     scanNumber(); //连续扫描当前数字串，注意区分小数点
@@ -118,8 +122,9 @@ void Lexer::scanText(){
                             advance();
                             break;
                         }
-                        else if(nextCh == ' '){
+                        else if(nextCh == ' '){ //说明只有一个等号=
                             keywords.push_back(tempStr);
+                            tokenVector.push_back(create(TokenKind::Equals, lineNum, keywords.size()-1, "="));
                             tempStr.clear();
                             break;
                         }
@@ -281,9 +286,31 @@ void Lexer::scanLetter(){
         if(tempCh == ' ' || tempCh == 0x0a || !isChar(tempCh)){ //如果遇到空格或者换行
             keywords.push_back(tmpStr);
             TokenKind kind;
-            lookupKeyword(tmpStr, kind);
-            tokenVector.push_back(create(kind, lineNum, keywords.size()-1, tmpStr)); //初步创建Token
+            if(lookupKeyword(tmpStr, kind)){ //说明是关键字
+                tokenVector.push_back(create(kind, lineNum, keywords.size()-1, tmpStr)); //初步创建Token
+            }
+            else{ //说明是变量名或者错误(待完善匹配错误)
+                tokenVector.push_back(create(TokenKind::Identifier, lineNum, keywords.size()-1, tmpStr)); 
+            }
             return ;
+        }
+        else{
+            tmpStr.push_back(tempCh);
+        }
+    }
+}
+void Lexer::scanString(){
+    string tmpStr;
+    while(true){
+        advance();
+        char tempCh = (*m_psm).at(offset_count);
+        if(tempCh == '"'){ //如果扫描到双引号的结尾
+            tokenVector.push_back(create(TokenKind::StringLiteral, lineNum, keywords.size()-1, tmpStr));
+            return ;
+        }
+        else if(islastChar()){
+            perror("scanString:");
+            exit(-1);
         }
         else{
             tmpStr.push_back(tempCh);
@@ -578,6 +605,7 @@ bool Lexer::isKeyword(TokenKind kind) {
         case TokenKind::WOrKeyword:
         case TokenKind::XnorKeyword:
         case TokenKind::XorKeyword:
+        case TokenKind::DefineKeyword:
             return true;
         default:
             return false;

@@ -360,6 +360,7 @@ string_view toString(TokenKind kind) {
         case TokenKind::WOrKeyword: return "WOrKeyword";
         case TokenKind::XnorKeyword: return "XnorKeyword";
         case TokenKind::XorKeyword: return "XorKeyword";
+        case TokenKind::DefineKeyword: return "DefineKeyword";
         case TokenKind::UnitSystemName: return "UnitSystemName";
         case TokenKind::RootSystemName: return "RootSystemName";
         case TokenKind::Directive: return "Directive";
