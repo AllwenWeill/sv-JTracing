@@ -53,7 +53,7 @@ void Lexer::scanText(){
                 break;
             default:  //说明为普通文字字符，而非空格注释等trivial things
                 if(isChar(tempCh)){ //如果是字母（关键字，变量名称）
-                    scanLetter(); //连续扫描当前字母串
+                    scanLetter(); //连续扫描当前字母串（此处待完善，变量名可以_下划线开头）
                     break;
                 }
                 else if(tempCh == '"'){ //如果是双引号，则为字符串文本
@@ -200,7 +200,13 @@ void Lexer::advance(int count){
     offset_count += count;
 }
 bool Lexer::islastChar(){//用'/0'也可以判断，但是不够
-    return offset_count >= m_indexOffset;
+    if(offset_count >= m_indexOffset){
+        tokenVector.push_back(create(TokenKind::EndOfFile, lineNum, keywords.size()-1, "EOF"));
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 void Lexer::scanBlockComment(){
     while(true){
@@ -317,7 +323,7 @@ void Lexer::scanString(){
         }
     }
 }
-void Lexer::scanNumber(){ //需要区分小数点(也可能不用区分，只需要识别小数点即可)
+void Lexer::scanNumber(){ //需要区分小数点(也可能不用区分，只需要识别小数点即可)，不能出现多个小数点
     bool isDecimal = false;
     string tmpStr;
     tmpStr.push_back((*m_psm).at(offset_count));
