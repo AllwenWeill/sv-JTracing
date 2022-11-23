@@ -181,6 +181,14 @@ void Lexer::scanText(){
                     tokenVector.push_back(create(TokenKind::Semicolon, lineNum, keywords.size()-1, ";"));
                     advance();
                 }
+                else if(tempCh == '('){ //有必要解析括号吗？
+                    tokenVector.push_back(create(TokenKind::OpenParenthesis, lineNum, keywords.size()-1, "("));
+                    advance();
+                }
+                else if(tempCh == ')'){
+                    tokenVector.push_back(create(TokenKind::CloseParenthesis, lineNum, keywords.size()-1, ")"));
+                    advance();
+                }
                 else{
                     advance();
                 }
