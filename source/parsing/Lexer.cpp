@@ -177,6 +177,10 @@ void Lexer::scanText(){
                         break;
                     }
                 }
+                else if(tempCh == ';'){
+                    tokenVector.push_back(create(TokenKind::Semicolon, lineNum, keywords.size()-1, ";"));
+                    advance();
+                }
                 else{
                     advance();
                 }
@@ -190,7 +194,7 @@ void Lexer::scanText(){
     }
     cout<<"TokenKind:------------"<<endl;
     for(auto k : tokenVector){
-        cout<<k.getTokenStr()<<":"<<k.getTokenKind()<<"行号:"<<k.TL.m_tokenLine<<endl;
+        cout<<k.getTokenStr()<<":"<<k.getTokenKindStr()<<"行号:"<<k.TL.m_tokenLine<<endl;
     }
 }
 void Lexer::advance(){
@@ -295,7 +299,7 @@ void Lexer::scanLetter(){
             if(lookupKeyword(tmpStr, kind)){ //说明是关键字
                 tokenVector.push_back(create(kind, lineNum, keywords.size()-1, tmpStr)); //初步创建Token
             }
-            else{ //说明是变量名或者错误(待完善匹配错误)
+            else{ //说明是变量名或者错误(待完善匹配错误)，没有区分标识符或者错误关键字
                 tokenVector.push_back(create(TokenKind::Identifier, lineNum, keywords.size()-1, tmpStr)); 
             }
             return ;
