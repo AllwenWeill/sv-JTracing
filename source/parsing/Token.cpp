@@ -10,11 +10,14 @@ Token::Token(TokenKind kind, int tokenNum, int tokenLine, string tokenString)
 }
 Token::~Token(){
 }
-string_view Token::getTokenKind(){
+string_view Token::getTokenKindStr(){
     return m_tokenkindStr;
 }
-string_view Token::getTokenStr(){
+string Token::getTokenStr(){
     return m_tokenString;
+}
+TokenKind Token::getTokenKind(){
+    return m_kind;
 }
 string_view toString(TokenKind kind) {
     switch (kind) {
