@@ -9,8 +9,9 @@ public:
     TokenLocation TL;
     Token(TokenKind kind,int tokenNum, int tokenLine, string tokenString);
     ~Token();
-    string_view getTokenKind(); //返回TokenKind的字符串，便于调试
-    string_view getTokenStr(); //返回该Token的实际字符串
+    string_view getTokenKindStr(); //返回TokenKind的字符串，便于调试
+    string getTokenStr(); //返回该Token的实际字符串
+    TokenKind getTokenKind(); //返回TokenKind
 private:
     string tokenString;
     TokenKind m_kind;

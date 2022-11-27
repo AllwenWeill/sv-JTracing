@@ -7,4 +7,6 @@
 #include <stdlib.h>
 #include <string>
 #include <unordered_map>
+#include <vector>
+#include <memory>
 using namespace std;
