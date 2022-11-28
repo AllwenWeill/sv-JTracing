@@ -10,7 +10,7 @@ Token::Token(TokenKind kind, int tokenNum, int tokenLine, string tokenString)
 }
 Token::~Token(){
 }
-string_view Token::getTokenKindStr(){
+string Token::getTokenKindStr(){
     return m_tokenkindStr;
 }
 string Token::getTokenStr(){
