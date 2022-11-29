@@ -301,6 +301,7 @@ void Lexer::scanLetter(){
     while(true){
         advance();
         char tempCh = (*m_psm).at(offset_count);
+        //if(tempCh == '(') //可能需要加扫描D(x)这种情况
         if(tempCh == ' ' || tempCh == 0x0a || !isChar(tempCh)){ //如果遇到空格或者换行
             keywords.push_back(tmpStr);
             TokenKind kind;
@@ -370,7 +371,9 @@ bool Lexer::lookupKeyword(string targetStr, TokenKind &kind){ //查找目标子�
     return false;
 } 
 
-
+vector<Token> Lexer::getTokenVector(){
+    return tokenVector;
+}
 
 bool Lexer::isKeyword(TokenKind kind) {
     switch (kind) {
