@@ -1,4 +1,4 @@
-class SyntaxNode{
+class SyntaxNode {
 public:
     SyntaxNode();
     ~SyntaxNode();

@@ -1,5 +1,5 @@
 #include "Lexer.h"
-Lexer::Lexer(const string *psm, unsigned long int indexOffset)
+Lexer::Lexer(const string* psm, unsigned long int indexOffset)
     :m_psm(psm),
     init_psm(psm),
     m_indexOffset(indexOffset)
@@ -9,202 +9,202 @@ Lexer::Lexer(const string *psm, unsigned long int indexOffset)
     keywoedsCount = 0;
     scanText();
 }
-//function: æ‰«æé˜¶æ®µï¼š ä¸»è¦è´Ÿè´£å®Œæˆä¸€äº›ä¸éœ€è¦ç”Ÿæˆè¯æ³•å•å…ƒçš„ç®€å•å¤„ç†ï¼Œæ¯”å¦‚åˆ é™¤æ³¨é‡Šå’Œå°†å¤šä¸ªè¿ç»­çš„ç©ºç™½å­—ç¬¦å‹ç¼©æˆä¸€ä¸ªå­—ç¬¦ï¼Œç„¶åäº§ç”Ÿè¯ç´ æµ
-void Lexer::scanText(){
+//function: É¨Ãè½×¶Î£º Ö÷Òª¸ºÔğÍê³ÉÒ»Ğ©²»ĞèÒªÉú³É´Ê·¨µ¥ÔªµÄ¼òµ¥´¦Àí£¬±ÈÈçÉ¾³ı×¢ÊÍºÍ½«¶à¸öÁ¬ĞøµÄ¿Õ°××Ö·ûÑ¹Ëõ³ÉÒ»¸ö×Ö·û£¬È»ºó²úÉú´ÊËØÁ÷
+void Lexer::scanText() {
     string tempStr;
-    cout<<*m_psm<<endl;
-    while(!islastChar()){
+    cout << *m_psm << endl;
+    while (!islastChar()) {
         char tempCh = (*m_psm).at(offset_count);
         //cout<<"tempCh:"<<tempCh<<endl;
         // cout<<"offset:"<<offset_count<<endl;
-        switch (tempCh){
-            case ' ':
-                keywoedsCount++;
-                keywords.push_back(tempStr);
-                tempStr.clear();
-                advance();
+        switch (tempCh) {
+        case ' ':
+            keywoedsCount++;
+            keywords.push_back(tempStr);
+            tempStr.clear();
+            advance();
+            break;
+        case '\t':
+        case '\v':
+        case '\f':
+        case '\0':
+        case '\r':
+        case '\n': //±íÊ¾»»ĞĞ
+            lineNum++;
+            keywoedsCount++;
+            keywords.push_back(tempStr);
+            tempStr.clear();
+            advance();
+            break;
+        case '/':
+            advance();
+            tempCh = (*m_psm).at(offset_count);
+            switch (tempCh)
+            {
+            case '*':   //¿é×¢ÊÍ
+                scanBlockComment();
                 break;
-            case '\t':
-            case '\v':
-            case '\f':
-            case '\0':
-            case '\r':
-            case '\n': //è¡¨ç¤ºæ¢è¡Œ
-                lineNum++;
-                keywoedsCount++;
-                keywords.push_back(tempStr);
-                tempStr.clear();
-                advance();
+            case '/':   //ĞĞ×¢ÊÍ
+                scanLineComment();
                 break;
-            case '/':
-                advance();
-                tempCh = (*m_psm).at(offset_count);
+            default:  //ËµÃ÷½öÓĞ"/"£¬ĞèÒª²úÉúerrorĞÅÏ¢
+                break;
+            }
+            break;
+        default:  //ËµÃ÷ÎªÆÕÍ¨ÎÄ×Ö×Ö·û£¬¶ø·Ç¿Õ¸ñ×¢ÊÍµÈtrivial things
+            if (isChar(tempCh)) { //Èç¹ûÊÇ×ÖÄ¸£¨¹Ø¼ü×Ö£¬±äÁ¿Ãû³Æ£¬×Ö·û´®£©
+                scanLetter(); //Á¬ĞøÉ¨Ãèµ±Ç°×ÖÄ¸´®
+                break;
+            }
+            else if (isNum(tempCh)) { //Èç¹ûÊÇÊı×Ö
+                scanNumber(); //Á¬ĞøÉ¨Ãèµ±Ç°Êı×Ö´®£¬×¢ÒâÇø·ÖĞ¡Êıµã
+                break;
+            }
+            else if (isOperator(tempCh)) { //Èç¹ûÊÇÔËËã·û
                 switch (tempCh)
                 {
-                case '*':   //å—æ³¨é‡Š
-                    scanBlockComment();
-                    break;
-                case '/':   //è¡Œæ³¨é‡Š
-                    scanLineComment();
-                    break;
-                default:  //è¯´æ˜ä»…æœ‰"/"ï¼Œéœ€è¦äº§ç”Ÿerrorä¿¡æ¯
-                    break;
-                }
-                break;
-            default:  //è¯´æ˜ä¸ºæ™®é€šæ–‡å­—å­—ç¬¦ï¼Œè€Œéç©ºæ ¼æ³¨é‡Šç­‰trivial things
-                if(isChar(tempCh)){ //å¦‚æœæ˜¯å­—æ¯ï¼ˆå…³é”®å­—ï¼Œå˜é‡åç§°ï¼Œå­—ç¬¦ä¸²ï¼‰
-                    scanLetter(); //è¿ç»­æ‰«æå½“å‰å­—æ¯ä¸²
-                    break;
-                }
-                else if(isNum(tempCh)){ //å¦‚æœæ˜¯æ•°å­—
-                    scanNumber(); //è¿ç»­æ‰«æå½“å‰æ•°å­—ä¸²ï¼Œæ³¨æ„åŒºåˆ†å°æ•°ç‚¹
-                    break;
-                }
-                else if(isOperator(tempCh)){ //å¦‚æœæ˜¯è¿ç®—ç¬¦
-                    switch(tempCh)
-                    {
-                        keywords.push_back(tempStr);
-                        tempStr.clear();
-                        tempStr.push_back(tempCh);
-                        keywords.push_back(tempStr);
-                        tempStr.clear(); //ä»¥ä¸Šä¸‰è¡Œå¾ˆå†—ä½™ï¼Œå³å…ˆå°†charè½¬stringå†å‹å…¥å®¹å™¨
-                        case '+':
-                            tokenVector.push_back(create(TokenKind::Plus, lineNum, keywords.size()-1, "+"));
-                            advance();
-                            break;
-                        case '-':
-                            tokenVector.push_back(create(TokenKind::Minus, lineNum, keywords.size()-1, "-"));
-                            advance();
-                            break;
-                        case '*':
-                            tokenVector.push_back(create(TokenKind::Star, lineNum, keywords.size()-1, "*"));
-                            advance();
-                            break;
-                        case '/':
-                            tokenVector.push_back(create(TokenKind::Slash, lineNum, keywords.size()-1, "/"));
-                            advance();
-                            break;
-                        case '%':
-                            tokenVector.push_back(create(TokenKind::Percent, lineNum, keywords.size()-1, "%"));
-                            advance();
-                            break;
-                        case '|':
-                            tokenVector.push_back(create(TokenKind::Or, lineNum, keywords.size()-1, "|"));
-                            advance();
-                            break;
-                        case '&':
-                            tokenVector.push_back(create(TokenKind::And, lineNum, keywords.size()-1, "&"));
-                            advance();
-                            break;
-                        default:
-                            perror("isOperator:");
-                            exit(-1);
-                    }
-                }
-                else if(isCmpOperator(tempCh)){ //å¦‚æœæ˜¯æ¯”è¾ƒç¬¦
                     keywords.push_back(tempStr);
                     tempStr.clear();
                     tempStr.push_back(tempCh);
+                    keywords.push_back(tempStr);
+                    tempStr.clear(); //ÒÔÉÏÈıĞĞºÜÈßÓà£¬¼´ÏÈ½«char×ªstringÔÙÑ¹ÈëÈİÆ÷
+                case '+':
+                    tokenVector.push_back(create(TokenKind::Plus, lineNum, keywords.size() - 1, "+"));
                     advance();
-                    char nextCh = (*m_psm).at(offset_count);
-                    switch (tempCh)
-                    {
-                    case '=':
-                        if(nextCh == '='){ //==
-                            tokenVector.push_back(create(TokenKind::DoubleEquals, lineNum, keywords.size()-1, "=="));
-                            tempStr.push_back(nextCh);
-                            keywords.push_back(tempStr);
-                            tempStr.clear();
-                            advance();
-                            break;
-                        }
-                        else if(nextCh == ' '){
-                            keywords.push_back(tempStr);
-                            tempStr.clear();
-                            break;
-                        }
-                        else{ //å¾…å®Œå–„
-
-                        }
-                    case '<':
-                        if(nextCh == '='){ //<=
-                            tokenVector.push_back(create(TokenKind::LessThanEquals, lineNum, keywords.size()-1, "<="));
-                            tempStr.push_back(nextCh);
-                            keywords.push_back(tempStr);
-                            tempStr.clear();
-                            advance();
-                            break;
-                        }
-                        else if(nextCh == ' '){
-                            keywords.push_back(tempStr);
-                            tempStr.clear();
-                            break;
-                        }
-                        else{ //å¯èƒ½æ˜¯èµ‹å€¼è¯­å¥ï¼Œå¯è¿˜æœ‰å•çº¯çš„>å’Œ<æ¯”è¾ƒæƒ…å†µ
-                            tokenVector.push_back(create(TokenKind::LessThan, lineNum, keywords.size()-1, "<"));
-                            keywords.push_back(tempStr);
-                            tempStr.clear();
-                            advance();
-                            break;
-                        }
-                    case '>':
-                        if(nextCh == '='){ //<=
-                            tokenVector.push_back(create(TokenKind::GreaterThanEquals, lineNum, keywords.size()-1, ">="));
-                            tempStr.push_back(nextCh);
-                            keywords.push_back(tempStr);
-                            tempStr.clear();
-                            advance();
-                            break;
-                        }
-                        else if(nextCh == ' '){
-                            keywords.push_back(tempStr);
-                            tempStr.clear();
-                            break;
-                        }
-                        else{ //å¯èƒ½æ˜¯èµ‹å€¼è¯­å¥ï¼Œå¯è¿˜æœ‰å•çº¯çš„>å’Œ<æ¯”è¾ƒæƒ…å†µ
-                            tokenVector.push_back(create(TokenKind::GreaterThan, lineNum, keywords.size()-1, ">"));
-                            keywords.push_back(tempStr);
-                            tempStr.clear();
-                            advance();
-                            break;
-                        }
-                    default: 
+                    break;
+                case '-':
+                    tokenVector.push_back(create(TokenKind::Minus, lineNum, keywords.size() - 1, "-"));
+                    advance();
+                    break;
+                case '*':
+                    tokenVector.push_back(create(TokenKind::Star, lineNum, keywords.size() - 1, "*"));
+                    advance();
+                    break;
+                case '/':
+                    tokenVector.push_back(create(TokenKind::Slash, lineNum, keywords.size() - 1, "/"));
+                    advance();
+                    break;
+                case '%':
+                    tokenVector.push_back(create(TokenKind::Percent, lineNum, keywords.size() - 1, "%"));
+                    advance();
+                    break;
+                case '|':
+                    tokenVector.push_back(create(TokenKind::Or, lineNum, keywords.size() - 1, "|"));
+                    advance();
+                    break;
+                case '&':
+                    tokenVector.push_back(create(TokenKind::And, lineNum, keywords.size() - 1, "&"));
+                    advance();
+                    break;
+                default:
+                    perror("isOperator:");
+                    exit(-1);
+                }
+            }
+            else if (isCmpOperator(tempCh)) { //Èç¹ûÊÇ±È½Ï·û
+                keywords.push_back(tempStr);
+                tempStr.clear();
+                tempStr.push_back(tempCh);
+                advance();
+                char nextCh = (*m_psm).at(offset_count);
+                switch (tempCh)
+                {
+                case '=':
+                    if (nextCh == '=') { //==
+                        tokenVector.push_back(create(TokenKind::DoubleEquals, lineNum, keywords.size() - 1, "=="));
+                        tempStr.push_back(nextCh);
+                        keywords.push_back(tempStr);
+                        tempStr.clear();
+                        advance();
                         break;
                     }
+                    else if (nextCh == ' ') {
+                        keywords.push_back(tempStr);
+                        tempStr.clear();
+                        break;
+                    }
+                    else { //´ıÍêÉÆ
+
+                    }
+                case '<':
+                    if (nextCh == '=') { //<=
+                        tokenVector.push_back(create(TokenKind::LessThanEquals, lineNum, keywords.size() - 1, "<="));
+                        tempStr.push_back(nextCh);
+                        keywords.push_back(tempStr);
+                        tempStr.clear();
+                        advance();
+                        break;
+                    }
+                    else if (nextCh == ' ') {
+                        keywords.push_back(tempStr);
+                        tempStr.clear();
+                        break;
+                    }
+                    else { //¿ÉÄÜÊÇ¸³ÖµÓï¾ä£¬¿É»¹ÓĞµ¥´¿µÄ>ºÍ<±È½ÏÇé¿ö
+                        tokenVector.push_back(create(TokenKind::LessThan, lineNum, keywords.size() - 1, "<"));
+                        keywords.push_back(tempStr);
+                        tempStr.clear();
+                        advance();
+                        break;
+                    }
+                case '>':
+                    if (nextCh == '=') { //<=
+                        tokenVector.push_back(create(TokenKind::GreaterThanEquals, lineNum, keywords.size() - 1, ">="));
+                        tempStr.push_back(nextCh);
+                        keywords.push_back(tempStr);
+                        tempStr.clear();
+                        advance();
+                        break;
+                    }
+                    else if (nextCh == ' ') {
+                        keywords.push_back(tempStr);
+                        tempStr.clear();
+                        break;
+                    }
+                    else { //¿ÉÄÜÊÇ¸³ÖµÓï¾ä£¬¿É»¹ÓĞµ¥´¿µÄ>ºÍ<±È½ÏÇé¿ö
+                        tokenVector.push_back(create(TokenKind::GreaterThan, lineNum, keywords.size() - 1, ">"));
+                        keywords.push_back(tempStr);
+                        tempStr.clear();
+                        advance();
+                        break;
+                    }
+                default:
+                    break;
                 }
-                else{
-                    advance();
-                }
+            }
+            else {
+                advance();
+            }
         }
     }
-    cout<<"test:æ‰“å°keywordsæ‰€æœ‰å…ƒç´ "<<endl;
-    for(string str : keywords){
+    cout << "test:´òÓ¡keywordsËùÓĞÔªËØ" << endl;
+    for (string str : keywords) {
         // for(auto ch : str)
         //     printf("%x ", ch);
-        cout<<str<<" "<<endl;
+        cout << str << " " << endl;
     }
-    cout<<"TokenKind:------------"<<endl;
-    for(auto k : tokenVector){
-        cout<<k.getTokenStr()<<":"<<k.getTokenKind()<<"è¡Œå·:"<<k.TL.m_tokenLine<<endl;
+    cout << "TokenKind:------------" << endl;
+    for (auto k : tokenVector) {
+        cout << k.getTokenStr() << ":" << k.getTokenKind() << "ĞĞºÅ:" << k.TL.m_tokenLine << endl;
     }
 }
-void Lexer::advance(){
+void Lexer::advance() {
     offset_count++;
 }
-void Lexer::advance(int count){
+void Lexer::advance(int count) {
     offset_count += count;
 }
-bool Lexer::islastChar(){//ç”¨'/0'ä¹Ÿå¯ä»¥åˆ¤æ–­ï¼Œä½†æ˜¯ä¸å¤Ÿ
+bool Lexer::islastChar() {//ÓÃ'/0'Ò²¿ÉÒÔÅĞ¶Ï£¬µ«ÊÇ²»¹»
     return offset_count >= m_indexOffset;
 }
-void Lexer::scanBlockComment(){
-    while(true){
+void Lexer::scanBlockComment() {
+    while (true) {
         char tempCh = (*m_psm).at(offset_count);
-        if (tempCh == '*' && (*m_psm).at(offset_count+1) == '/') { //æ­¤å¤„offset_count+1æœ‰è¶Šç•Œé£é™©
+        if (tempCh == '*' && (*m_psm).at(offset_count + 1) == '/') { //´Ë´¦offset_count+1ÓĞÔ½½ç·çÏÕ
             advance(2);
             break;
-        } 
-        else if(islastChar()){
+        }
+        else if (islastChar()) {
             break;
         }
         else {
@@ -212,374 +212,374 @@ void Lexer::scanBlockComment(){
         }
     }
 }
-void Lexer::scanLineComment(){
+void Lexer::scanLineComment() {
     while (true) {
         char tempCh = (*m_psm).at(offset_count);
-        if (tempCh == 0x0a) {//0x0aè¡¨ç¤ºæ¢è¡Œ
+        if (tempCh == 0x0a) {//0x0a±íÊ¾»»ĞĞ
             lineNum++;
             advance(1);
             break;
         }
-        else if(islastChar()){
+        else if (islastChar()) {
             break;
         }
-        else{
+        else {
             advance();
         }
     }
 }
-Token Lexer::create(TokenKind kind, int tokenLine, int tokenNum, string tokenString){
+Token Lexer::create(TokenKind kind, int tokenLine, int tokenNum, string tokenString) {
     return Token(kind, tokenNum, tokenLine, tokenString);
 }
-Lexer::~Lexer(){
-    
+Lexer::~Lexer() {
+
 }
-bool isChar(const char &ch){
-    if((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || ch == '_' || ch == '.')
+bool isChar(const char& ch) {
+    if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || ch == '_' || ch == '.')
         return true;
     else
         return false;
 }
-bool isNum(const char &ch){
-    if(ch >= '0' && ch <= '9')
+bool isNum(const char& ch) {
+    if (ch >= '0' && ch <= '9')
         return true;
     else
         return false;
 }
-bool isOperator(const char &ch){
+bool isOperator(const char& ch) {
     switch (ch)
     {
-        case '*':
-        case '%':
-        case '/':
-        case '&':
-        case '+':
-        case '-':
-        case '|':
-            return true;
-        default:
-            return false;
+    case '*':
+    case '%':
+    case '/':
+    case '&':
+    case '+':
+    case '-':
+    case '|':
+        return true;
+    default:
+        return false;
     }
 }
-bool isCmpOperator(const char &ch){
-    switch(ch)
+bool isCmpOperator(const char& ch) {
+    switch (ch)
     {
-        case '<':
-        case '=':
-        case '>':
-            return true;
-        default:
-            return false;
+    case '<':
+    case '=':
+    case '>':
+        return true;
+    default:
+        return false;
     }
 }
-void Lexer::scanLetter(){
+void Lexer::scanLetter() {
     string tmpStr;
     tmpStr.push_back((*m_psm).at(offset_count));
-    while(true){
+    while (true) {
         advance();
         char tempCh = (*m_psm).at(offset_count);
-        if(tempCh == ' ' || tempCh == 0x0a || !isChar(tempCh)){ //å¦‚æœé‡åˆ°ç©ºæ ¼æˆ–è€…æ¢è¡Œ
+        if (tempCh == ' ' || tempCh == 0x0a || !isChar(tempCh)) { //Èç¹ûÓöµ½¿Õ¸ñ»òÕß»»ĞĞ
             keywords.push_back(tmpStr);
             TokenKind kind;
             lookupKeyword(tmpStr, kind);
-            tokenVector.push_back(create(kind, lineNum, keywords.size()-1, tmpStr)); //åˆæ­¥åˆ›å»ºToken
-            return ;
+            tokenVector.push_back(create(kind, lineNum, keywords.size() - 1, tmpStr)); //³õ²½´´½¨Token
+            return;
         }
-        else{
+        else {
             tmpStr.push_back(tempCh);
         }
     }
 }
-void Lexer::scanNumber(){ //éœ€è¦åŒºåˆ†å°æ•°ç‚¹(ä¹Ÿå¯èƒ½ä¸ç”¨åŒºåˆ†ï¼Œåªéœ€è¦è¯†åˆ«å°æ•°ç‚¹å³å¯)
+void Lexer::scanNumber() { //ĞèÒªÇø·ÖĞ¡Êıµã(Ò²¿ÉÄÜ²»ÓÃÇø·Ö£¬Ö»ĞèÒªÊ¶±ğĞ¡Êıµã¼´¿É)
     bool isDecimal = false;
     string tmpStr;
     tmpStr.push_back((*m_psm).at(offset_count));
-    while(true){
+    while (true) {
         advance();
         char tempCh = (*m_psm).at(offset_count);
-        if(tempCh == '.'){
+        if (tempCh == '.') {
             isDecimal = true;
         }
-        else if(tempCh == ' ' || tempCh == 0x0a || isNum(tempCh)){ //å¦‚æœé‡åˆ°ç©ºæ ¼æˆ–è€…æ¢è¡Œ
+        else if (tempCh == ' ' || tempCh == 0x0a || isNum(tempCh)) { //Èç¹ûÓöµ½¿Õ¸ñ»òÕß»»ĞĞ
             keywords.push_back(tmpStr);
-            if(isDecimal){
-                tokenVector.push_back(create(TokenKind::IntegerLiteral, lineNum, keywords.size()-1, tmpStr)); //æ·»åŠ å°æ•°Tokenï¼Œå¥½åƒä¸ç”¨åŒºåˆ†å°æ•°
+            if (isDecimal) {
+                tokenVector.push_back(create(TokenKind::IntegerLiteral, lineNum, keywords.size() - 1, tmpStr)); //Ìí¼ÓĞ¡ÊıToken£¬ºÃÏñ²»ÓÃÇø·ÖĞ¡Êı
             }
-            else{
-                tokenVector.push_back(create(TokenKind::IntegerLiteral, lineNum, keywords.size()-1, tmpStr)); //æ·»åŠ æ•´æ•°Token
+            else {
+                tokenVector.push_back(create(TokenKind::IntegerLiteral, lineNum, keywords.size() - 1, tmpStr)); //Ìí¼ÓÕûÊıToken
             }
-            return ;
+            return;
         }
     }
 }
-bool Lexer::lookupKeyword(string targetStr, TokenKind &kind){ //æŸ¥æ‰¾ç›®æ ‡å­å­—ç¬¦ä¸²æ˜¯å¦ä¸ºå…³é”®å­—
+bool Lexer::lookupKeyword(string targetStr, TokenKind& kind) { //²éÕÒÄ¿±ê×Ó×Ö·û´®ÊÇ·ñÎª¹Ø¼ü×Ö
     //std::initializer_list<std::pair<string_view, TokenKind>> allKeywords = {KEYWORDS_1364_1995};
-    unordered_map<string_view, TokenKind> allKeywords_map = {KEYWORDS_1364_1995};
-    if(allKeywords_map.count(targetStr)){ //å¦‚æœå­˜åœ¨åœ¨å…³é”®å­—mapä¸­
+    unordered_map<string_view, TokenKind> allKeywords_map = { KEYWORDS_1364_1995 };
+    if (allKeywords_map.count(targetStr)) { //Èç¹û´æÔÚÔÚ¹Ø¼ü×ÖmapÖĞ
         kind = allKeywords_map[targetStr];
         return true;
     }
-    else{
-        kind = TokenKind::StringLiteral; //è¯´æ˜æ˜¯æ™®é€šå­—ç¬¦ä¸²
+    else {
+        kind = TokenKind::StringLiteral; //ËµÃ÷ÊÇÆÕÍ¨×Ö·û´®
     }
     return false;
-} 
+}
 
 
 
 bool Lexer::isKeyword(TokenKind kind) {
     switch (kind) {
-        case TokenKind::OneStep:
-        case TokenKind::AcceptOnKeyword:
-        case TokenKind::AliasKeyword:
-        case TokenKind::AlwaysKeyword:
-        case TokenKind::AlwaysCombKeyword:
-        case TokenKind::AlwaysFFKeyword:
-        case TokenKind::AlwaysLatchKeyword:
-        case TokenKind::AndKeyword:
-        case TokenKind::AssertKeyword:
-        case TokenKind::AssignKeyword:
-        case TokenKind::AssumeKeyword:
-        case TokenKind::AutomaticKeyword:
-        case TokenKind::BeforeKeyword:
-        case TokenKind::BeginKeyword:
-        case TokenKind::BindKeyword:
-        case TokenKind::BinsKeyword:
-        case TokenKind::BinsOfKeyword:
-        case TokenKind::BitKeyword:
-        case TokenKind::BreakKeyword:
-        case TokenKind::BufKeyword:
-        case TokenKind::BufIf0Keyword:
-        case TokenKind::BufIf1Keyword:
-        case TokenKind::ByteKeyword:
-        case TokenKind::CaseKeyword:
-        case TokenKind::CaseXKeyword:
-        case TokenKind::CaseZKeyword:
-        case TokenKind::CellKeyword:
-        case TokenKind::CHandleKeyword:
-        case TokenKind::CheckerKeyword:
-        case TokenKind::ClassKeyword:
-        case TokenKind::ClockingKeyword:
-        case TokenKind::CmosKeyword:
-        case TokenKind::ConfigKeyword:
-        case TokenKind::ConstKeyword:
-        case TokenKind::ConstraintKeyword:
-        case TokenKind::ContextKeyword:
-        case TokenKind::ContinueKeyword:
-        case TokenKind::CoverKeyword:
-        case TokenKind::CoverGroupKeyword:
-        case TokenKind::CoverPointKeyword:
-        case TokenKind::CrossKeyword:
-        case TokenKind::DeassignKeyword:
-        case TokenKind::DefaultKeyword:
-        case TokenKind::DefParamKeyword:
-        case TokenKind::DesignKeyword:
-        case TokenKind::DisableKeyword:
-        case TokenKind::DistKeyword:
-        case TokenKind::DoKeyword:
-        case TokenKind::EdgeKeyword:
-        case TokenKind::ElseKeyword:
-        case TokenKind::EndKeyword:
-        case TokenKind::EndCaseKeyword:
-        case TokenKind::EndCheckerKeyword:
-        case TokenKind::EndClassKeyword:
-        case TokenKind::EndClockingKeyword:
-        case TokenKind::EndConfigKeyword:
-        case TokenKind::EndFunctionKeyword:
-        case TokenKind::EndGenerateKeyword:
-        case TokenKind::EndGroupKeyword:
-        case TokenKind::EndInterfaceKeyword:
-        case TokenKind::EndModuleKeyword:
-        case TokenKind::EndPackageKeyword:
-        case TokenKind::EndPrimitiveKeyword:
-        case TokenKind::EndProgramKeyword:
-        case TokenKind::EndPropertyKeyword:
-        case TokenKind::EndSpecifyKeyword:
-        case TokenKind::EndSequenceKeyword:
-        case TokenKind::EndTableKeyword:
-        case TokenKind::EndTaskKeyword:
-        case TokenKind::EnumKeyword:
-        case TokenKind::EventKeyword:
-        case TokenKind::EventuallyKeyword:
-        case TokenKind::ExpectKeyword:
-        case TokenKind::ExportKeyword:
-        case TokenKind::ExtendsKeyword:
-        case TokenKind::ExternKeyword:
-        case TokenKind::FinalKeyword:
-        case TokenKind::FirstMatchKeyword:
-        case TokenKind::ForKeyword:
-        case TokenKind::ForceKeyword:
-        case TokenKind::ForeachKeyword:
-        case TokenKind::ForeverKeyword:
-        case TokenKind::ForkKeyword:
-        case TokenKind::ForkJoinKeyword:
-        case TokenKind::FunctionKeyword:
-        case TokenKind::GenerateKeyword:
-        case TokenKind::GenVarKeyword:
-        case TokenKind::GlobalKeyword:
-        case TokenKind::HighZ0Keyword:
-        case TokenKind::HighZ1Keyword:
-        case TokenKind::IfKeyword:
-        case TokenKind::IffKeyword:
-        case TokenKind::IfNoneKeyword:
-        case TokenKind::IgnoreBinsKeyword:
-        case TokenKind::IllegalBinsKeyword:
-        case TokenKind::ImplementsKeyword:
-        case TokenKind::ImpliesKeyword:
-        case TokenKind::ImportKeyword:
-        case TokenKind::IncDirKeyword:
-        case TokenKind::IncludeKeyword:
-        case TokenKind::InitialKeyword:
-        case TokenKind::InOutKeyword:
-        case TokenKind::InputKeyword:
-        case TokenKind::InsideKeyword:
-        case TokenKind::InstanceKeyword:
-        case TokenKind::IntKeyword:
-        case TokenKind::IntegerKeyword:
-        case TokenKind::InterconnectKeyword:
-        case TokenKind::InterfaceKeyword:
-        case TokenKind::IntersectKeyword:
-        case TokenKind::JoinKeyword:
-        case TokenKind::JoinAnyKeyword:
-        case TokenKind::JoinNoneKeyword:
-        case TokenKind::LargeKeyword:
-        case TokenKind::LetKeyword:
-        case TokenKind::LibListKeyword:
-        case TokenKind::LibraryKeyword:
-        case TokenKind::LocalKeyword:
-        case TokenKind::LocalParamKeyword:
-        case TokenKind::LogicKeyword:
-        case TokenKind::LongIntKeyword:
-        case TokenKind::MacromoduleKeyword:
-        case TokenKind::MatchesKeyword:
-        case TokenKind::MediumKeyword:
-        case TokenKind::ModPortKeyword:
-        case TokenKind::ModuleKeyword:
-        case TokenKind::NandKeyword:
-        case TokenKind::NegEdgeKeyword:
-        case TokenKind::NetTypeKeyword:
-        case TokenKind::NewKeyword:
-        case TokenKind::NextTimeKeyword:
-        case TokenKind::NmosKeyword:
-        case TokenKind::NorKeyword:
-        case TokenKind::NoShowCancelledKeyword:
-        case TokenKind::NotKeyword:
-        case TokenKind::NotIf0Keyword:
-        case TokenKind::NotIf1Keyword:
-        case TokenKind::NullKeyword:
-        case TokenKind::OrKeyword:
-        case TokenKind::OutputKeyword:
-        case TokenKind::PackageKeyword:
-        case TokenKind::PackedKeyword:
-        case TokenKind::ParameterKeyword:
-        case TokenKind::PmosKeyword:
-        case TokenKind::PosEdgeKeyword:
-        case TokenKind::PrimitiveKeyword:
-        case TokenKind::PriorityKeyword:
-        case TokenKind::ProgramKeyword:
-        case TokenKind::PropertyKeyword:
-        case TokenKind::ProtectedKeyword:
-        case TokenKind::Pull0Keyword:
-        case TokenKind::Pull1Keyword:
-        case TokenKind::PullDownKeyword:
-        case TokenKind::PullUpKeyword:
-        case TokenKind::PulseStyleOnDetectKeyword:
-        case TokenKind::PulseStyleOnEventKeyword:
-        case TokenKind::PureKeyword:
-        case TokenKind::RandKeyword:
-        case TokenKind::RandCKeyword:
-        case TokenKind::RandCaseKeyword:
-        case TokenKind::RandSequenceKeyword:
-        case TokenKind::RcmosKeyword:
-        case TokenKind::RealKeyword:
-        case TokenKind::RealTimeKeyword:
-        case TokenKind::RefKeyword:
-        case TokenKind::RegKeyword:
-        case TokenKind::RejectOnKeyword:
-        case TokenKind::ReleaseKeyword:
-        case TokenKind::RepeatKeyword:
-        case TokenKind::RestrictKeyword:
-        case TokenKind::ReturnKeyword:
-        case TokenKind::RnmosKeyword:
-        case TokenKind::RpmosKeyword:
-        case TokenKind::RtranKeyword:
-        case TokenKind::RtranIf0Keyword:
-        case TokenKind::RtranIf1Keyword:
-        case TokenKind::SAlwaysKeyword:
-        case TokenKind::SEventuallyKeyword:
-        case TokenKind::SNextTimeKeyword:
-        case TokenKind::SUntilKeyword:
-        case TokenKind::SUntilWithKeyword:
-        case TokenKind::ScalaredKeyword:
-        case TokenKind::SequenceKeyword:
-        case TokenKind::ShortIntKeyword:
-        case TokenKind::ShortRealKeyword:
-        case TokenKind::ShowCancelledKeyword:
-        case TokenKind::SignedKeyword:
-        case TokenKind::SmallKeyword:
-        case TokenKind::SoftKeyword:
-        case TokenKind::SolveKeyword:
-        case TokenKind::SpecifyKeyword:
-        case TokenKind::SpecParamKeyword:
-        case TokenKind::StaticKeyword:
-        case TokenKind::StringKeyword:
-        case TokenKind::StrongKeyword:
-        case TokenKind::Strong0Keyword:
-        case TokenKind::Strong1Keyword:
-        case TokenKind::StructKeyword:
-        case TokenKind::SuperKeyword:
-        case TokenKind::Supply0Keyword:
-        case TokenKind::Supply1Keyword:
-        case TokenKind::SyncAcceptOnKeyword:
-        case TokenKind::SyncRejectOnKeyword:
-        case TokenKind::TableKeyword:
-        case TokenKind::TaggedKeyword:
-        case TokenKind::TaskKeyword:
-        case TokenKind::ThisKeyword:
-        case TokenKind::ThroughoutKeyword:
-        case TokenKind::TimeKeyword:
-        case TokenKind::TimePrecisionKeyword:
-        case TokenKind::TimeUnitKeyword:
-        case TokenKind::TranKeyword:
-        case TokenKind::TranIf0Keyword:
-        case TokenKind::TranIf1Keyword:
-        case TokenKind::TriKeyword:
-        case TokenKind::Tri0Keyword:
-        case TokenKind::Tri1Keyword:
-        case TokenKind::TriAndKeyword:
-        case TokenKind::TriOrKeyword:
-        case TokenKind::TriRegKeyword:
-        case TokenKind::TypeKeyword:
-        case TokenKind::TypedefKeyword:
-        case TokenKind::UnionKeyword:
-        case TokenKind::UniqueKeyword:
-        case TokenKind::Unique0Keyword:
-        case TokenKind::UnsignedKeyword:
-        case TokenKind::UntilKeyword:
-        case TokenKind::UntilWithKeyword:
-        case TokenKind::UntypedKeyword:
-        case TokenKind::UseKeyword:
-        case TokenKind::UWireKeyword:
-        case TokenKind::VarKeyword:
-        case TokenKind::VectoredKeyword:
-        case TokenKind::VirtualKeyword:
-        case TokenKind::VoidKeyword:
-        case TokenKind::WaitKeyword:
-        case TokenKind::WaitOrderKeyword:
-        case TokenKind::WAndKeyword:
-        case TokenKind::WeakKeyword:
-        case TokenKind::Weak0Keyword:
-        case TokenKind::Weak1Keyword:
-        case TokenKind::WhileKeyword:
-        case TokenKind::WildcardKeyword:
-        case TokenKind::WireKeyword:
-        case TokenKind::WithKeyword:
-        case TokenKind::WithinKeyword:
-        case TokenKind::WOrKeyword:
-        case TokenKind::XnorKeyword:
-        case TokenKind::XorKeyword:
-            return true;
-        default:
-            return false;
+    case TokenKind::OneStep:
+    case TokenKind::AcceptOnKeyword:
+    case TokenKind::AliasKeyword:
+    case TokenKind::AlwaysKeyword:
+    case TokenKind::AlwaysCombKeyword:
+    case TokenKind::AlwaysFFKeyword:
+    case TokenKind::AlwaysLatchKeyword:
+    case TokenKind::AndKeyword:
+    case TokenKind::AssertKeyword:
+    case TokenKind::AssignKeyword:
+    case TokenKind::AssumeKeyword:
+    case TokenKind::AutomaticKeyword:
+    case TokenKind::BeforeKeyword:
+    case TokenKind::BeginKeyword:
+    case TokenKind::BindKeyword:
+    case TokenKind::BinsKeyword:
+    case TokenKind::BinsOfKeyword:
+    case TokenKind::BitKeyword:
+    case TokenKind::BreakKeyword:
+    case TokenKind::BufKeyword:
+    case TokenKind::BufIf0Keyword:
+    case TokenKind::BufIf1Keyword:
+    case TokenKind::ByteKeyword:
+    case TokenKind::CaseKeyword:
+    case TokenKind::CaseXKeyword:
+    case TokenKind::CaseZKeyword:
+    case TokenKind::CellKeyword:
+    case TokenKind::CHandleKeyword:
+    case TokenKind::CheckerKeyword:
+    case TokenKind::ClassKeyword:
+    case TokenKind::ClockingKeyword:
+    case TokenKind::CmosKeyword:
+    case TokenKind::ConfigKeyword:
+    case TokenKind::ConstKeyword:
+    case TokenKind::ConstraintKeyword:
+    case TokenKind::ContextKeyword:
+    case TokenKind::ContinueKeyword:
+    case TokenKind::CoverKeyword:
+    case TokenKind::CoverGroupKeyword:
+    case TokenKind::CoverPointKeyword:
+    case TokenKind::CrossKeyword:
+    case TokenKind::DeassignKeyword:
+    case TokenKind::DefaultKeyword:
+    case TokenKind::DefParamKeyword:
+    case TokenKind::DesignKeyword:
+    case TokenKind::DisableKeyword:
+    case TokenKind::DistKeyword:
+    case TokenKind::DoKeyword:
+    case TokenKind::EdgeKeyword:
+    case TokenKind::ElseKeyword:
+    case TokenKind::EndKeyword:
+    case TokenKind::EndCaseKeyword:
+    case TokenKind::EndCheckerKeyword:
+    case TokenKind::EndClassKeyword:
+    case TokenKind::EndClockingKeyword:
+    case TokenKind::EndConfigKeyword:
+    case TokenKind::EndFunctionKeyword:
+    case TokenKind::EndGenerateKeyword:
+    case TokenKind::EndGroupKeyword:
+    case TokenKind::EndInterfaceKeyword:
+    case TokenKind::EndModuleKeyword:
+    case TokenKind::EndPackageKeyword:
+    case TokenKind::EndPrimitiveKeyword:
+    case TokenKind::EndProgramKeyword:
+    case TokenKind::EndPropertyKeyword:
+    case TokenKind::EndSpecifyKeyword:
+    case TokenKind::EndSequenceKeyword:
+    case TokenKind::EndTableKeyword:
+    case TokenKind::EndTaskKeyword:
+    case TokenKind::EnumKeyword:
+    case TokenKind::EventKeyword:
+    case TokenKind::EventuallyKeyword:
+    case TokenKind::ExpectKeyword:
+    case TokenKind::ExportKeyword:
+    case TokenKind::ExtendsKeyword:
+    case TokenKind::ExternKeyword:
+    case TokenKind::FinalKeyword:
+    case TokenKind::FirstMatchKeyword:
+    case TokenKind::ForKeyword:
+    case TokenKind::ForceKeyword:
+    case TokenKind::ForeachKeyword:
+    case TokenKind::ForeverKeyword:
+    case TokenKind::ForkKeyword:
+    case TokenKind::ForkJoinKeyword:
+    case TokenKind::FunctionKeyword:
+    case TokenKind::GenerateKeyword:
+    case TokenKind::GenVarKeyword:
+    case TokenKind::GlobalKeyword:
+    case TokenKind::HighZ0Keyword:
+    case TokenKind::HighZ1Keyword:
+    case TokenKind::IfKeyword:
+    case TokenKind::IffKeyword:
+    case TokenKind::IfNoneKeyword:
+    case TokenKind::IgnoreBinsKeyword:
+    case TokenKind::IllegalBinsKeyword:
+    case TokenKind::ImplementsKeyword:
+    case TokenKind::ImpliesKeyword:
+    case TokenKind::ImportKeyword:
+    case TokenKind::IncDirKeyword:
+    case TokenKind::IncludeKeyword:
+    case TokenKind::InitialKeyword:
+    case TokenKind::InOutKeyword:
+    case TokenKind::InputKeyword:
+    case TokenKind::InsideKeyword:
+    case TokenKind::InstanceKeyword:
+    case TokenKind::IntKeyword:
+    case TokenKind::IntegerKeyword:
+    case TokenKind::InterconnectKeyword:
+    case TokenKind::InterfaceKeyword:
+    case TokenKind::IntersectKeyword:
+    case TokenKind::JoinKeyword:
+    case TokenKind::JoinAnyKeyword:
+    case TokenKind::JoinNoneKeyword:
+    case TokenKind::LargeKeyword:
+    case TokenKind::LetKeyword:
+    case TokenKind::LibListKeyword:
+    case TokenKind::LibraryKeyword:
+    case TokenKind::LocalKeyword:
+    case TokenKind::LocalParamKeyword:
+    case TokenKind::LogicKeyword:
+    case TokenKind::LongIntKeyword:
+    case TokenKind::MacromoduleKeyword:
+    case TokenKind::MatchesKeyword:
+    case TokenKind::MediumKeyword:
+    case TokenKind::ModPortKeyword:
+    case TokenKind::ModuleKeyword:
+    case TokenKind::NandKeyword:
+    case TokenKind::NegEdgeKeyword:
+    case TokenKind::NetTypeKeyword:
+    case TokenKind::NewKeyword:
+    case TokenKind::NextTimeKeyword:
+    case TokenKind::NmosKeyword:
+    case TokenKind::NorKeyword:
+    case TokenKind::NoShowCancelledKeyword:
+    case TokenKind::NotKeyword:
+    case TokenKind::NotIf0Keyword:
+    case TokenKind::NotIf1Keyword:
+    case TokenKind::NullKeyword:
+    case TokenKind::OrKeyword:
+    case TokenKind::OutputKeyword:
+    case TokenKind::PackageKeyword:
+    case TokenKind::PackedKeyword:
+    case TokenKind::ParameterKeyword:
+    case TokenKind::PmosKeyword:
+    case TokenKind::PosEdgeKeyword:
+    case TokenKind::PrimitiveKeyword:
+    case TokenKind::PriorityKeyword:
+    case TokenKind::ProgramKeyword:
+    case TokenKind::PropertyKeyword:
+    case TokenKind::ProtectedKeyword:
+    case TokenKind::Pull0Keyword:
+    case TokenKind::Pull1Keyword:
+    case TokenKind::PullDownKeyword:
+    case TokenKind::PullUpKeyword:
+    case TokenKind::PulseStyleOnDetectKeyword:
+    case TokenKind::PulseStyleOnEventKeyword:
+    case TokenKind::PureKeyword:
+    case TokenKind::RandKeyword:
+    case TokenKind::RandCKeyword:
+    case TokenKind::RandCaseKeyword:
+    case TokenKind::RandSequenceKeyword:
+    case TokenKind::RcmosKeyword:
+    case TokenKind::RealKeyword:
+    case TokenKind::RealTimeKeyword:
+    case TokenKind::RefKeyword:
+    case TokenKind::RegKeyword:
+    case TokenKind::RejectOnKeyword:
+    case TokenKind::ReleaseKeyword:
+    case TokenKind::RepeatKeyword:
+    case TokenKind::RestrictKeyword:
+    case TokenKind::ReturnKeyword:
+    case TokenKind::RnmosKeyword:
+    case TokenKind::RpmosKeyword:
+    case TokenKind::RtranKeyword:
+    case TokenKind::RtranIf0Keyword:
+    case TokenKind::RtranIf1Keyword:
+    case TokenKind::SAlwaysKeyword:
+    case TokenKind::SEventuallyKeyword:
+    case TokenKind::SNextTimeKeyword:
+    case TokenKind::SUntilKeyword:
+    case TokenKind::SUntilWithKeyword:
+    case TokenKind::ScalaredKeyword:
+    case TokenKind::SequenceKeyword:
+    case TokenKind::ShortIntKeyword:
+    case TokenKind::ShortRealKeyword:
+    case TokenKind::ShowCancelledKeyword:
+    case TokenKind::SignedKeyword:
+    case TokenKind::SmallKeyword:
+    case TokenKind::SoftKeyword:
+    case TokenKind::SolveKeyword:
+    case TokenKind::SpecifyKeyword:
+    case TokenKind::SpecParamKeyword:
+    case TokenKind::StaticKeyword:
+    case TokenKind::StringKeyword:
+    case TokenKind::StrongKeyword:
+    case TokenKind::Strong0Keyword:
+    case TokenKind::Strong1Keyword:
+    case TokenKind::StructKeyword:
+    case TokenKind::SuperKeyword:
+    case TokenKind::Supply0Keyword:
+    case TokenKind::Supply1Keyword:
+    case TokenKind::SyncAcceptOnKeyword:
+    case TokenKind::SyncRejectOnKeyword:
+    case TokenKind::TableKeyword:
+    case TokenKind::TaggedKeyword:
+    case TokenKind::TaskKeyword:
+    case TokenKind::ThisKeyword:
+    case TokenKind::ThroughoutKeyword:
+    case TokenKind::TimeKeyword:
+    case TokenKind::TimePrecisionKeyword:
+    case TokenKind::TimeUnitKeyword:
+    case TokenKind::TranKeyword:
+    case TokenKind::TranIf0Keyword:
+    case TokenKind::TranIf1Keyword:
+    case TokenKind::TriKeyword:
+    case TokenKind::Tri0Keyword:
+    case TokenKind::Tri1Keyword:
+    case TokenKind::TriAndKeyword:
+    case TokenKind::TriOrKeyword:
+    case TokenKind::TriRegKeyword:
+    case TokenKind::TypeKeyword:
+    case TokenKind::TypedefKeyword:
+    case TokenKind::UnionKeyword:
+    case TokenKind::UniqueKeyword:
+    case TokenKind::Unique0Keyword:
+    case TokenKind::UnsignedKeyword:
+    case TokenKind::UntilKeyword:
+    case TokenKind::UntilWithKeyword:
+    case TokenKind::UntypedKeyword:
+    case TokenKind::UseKeyword:
+    case TokenKind::UWireKeyword:
+    case TokenKind::VarKeyword:
+    case TokenKind::VectoredKeyword:
+    case TokenKind::VirtualKeyword:
+    case TokenKind::VoidKeyword:
+    case TokenKind::WaitKeyword:
+    case TokenKind::WaitOrderKeyword:
+    case TokenKind::WAndKeyword:
+    case TokenKind::WeakKeyword:
+    case TokenKind::Weak0Keyword:
+    case TokenKind::Weak1Keyword:
+    case TokenKind::WhileKeyword:
+    case TokenKind::WildcardKeyword:
+    case TokenKind::WireKeyword:
+    case TokenKind::WithKeyword:
+    case TokenKind::WithinKeyword:
+    case TokenKind::WOrKeyword:
+    case TokenKind::XnorKeyword:
+    case TokenKind::XorKeyword:
+        return true;
+    default:
+        return false;
     }
 }

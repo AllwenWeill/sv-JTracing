@@ -4,9 +4,9 @@
 #include "Token.h"
 #include "TokenKind.h"
 #include "keywordsDefine.h"
-class Lexer{
+class Lexer {
 public:
-    Lexer(const string *psm, unsigned long int indexOffset);
+    Lexer(const string* psm, unsigned long int indexOffset);
     // Not copyable
     Lexer(const Lexer&) = delete;
     Lexer& operator=(const Lexer&) = delete;
@@ -16,8 +16,8 @@ public:
 private:
     vector<string> keywords;
     vector<Token> tokenVector;
-    const string *m_psm; //æŒ‡å‘æ–‡æœ¬æŒ‡é’ˆçš„å‰¯æœ¬æŒ‡é’ˆ
-    const string *init_psm;
+    const string* m_psm; //Ö¸ÏòÎÄ±¾Ö¸ÕëµÄ¸±±¾Ö¸Õë
+    const string* init_psm;
     void advance();
     void advance(int count);
     bool islastChar();
@@ -25,15 +25,15 @@ private:
     unsigned long int offset_count;
     int lineNum;
     int keywoedsCount;
-    void scanBlockComment();//å³ç”¨"/*",ç”¨"/*"æ¥æ³¨é‡Šéœ€è¦ä»¥"*/"æ¥ç»“å°¾ï¼Œå› æ­¤éœ€æ‰«æåˆ°æœ«å°¾"*/"æ¥è·³è¿‡æ³¨é‡Š
-    void scanLineComment();//å³ç”¨"//",ç”¨"//"æ¥æ³¨é‡Šåˆ™ä¸€æ•´è¡Œå‡è¢«æ³¨é‡Šï¼Œå› æ­¤éœ€æ‰«ææ¢è¡Œç¬¦ä¸ºæœ¬è¡Œå°¾éƒ¨æ¥è·³è¿‡æ³¨é‡Š
-    void scanLetter(); //è¿ç»­æ‰«æå½“å‰å­—æ¯ä¸²
-    void scanNumber(); //è¿ç»­æ‰«æå½“å‰æ•°å­—ä¸²ï¼Œæ³¨æ„åŒºåˆ†å°æ•°ç‚¹
+    void scanBlockComment();//¼´ÓÃ"/*",ÓÃ"/*"À´×¢ÊÍĞèÒªÒÔ"*/"À´½áÎ²£¬Òò´ËĞèÉ¨Ãèµ½Ä©Î²"*/"À´Ìø¹ı×¢ÊÍ
+    void scanLineComment();//¼´ÓÃ"//",ÓÃ"//"À´×¢ÊÍÔòÒ»ÕûĞĞ¾ù±»×¢ÊÍ£¬Òò´ËĞèÉ¨Ãè»»ĞĞ·ûÎª±¾ĞĞÎ²²¿À´Ìø¹ı×¢ÊÍ
+    void scanLetter(); //Á¬ĞøÉ¨Ãèµ±Ç°×ÖÄ¸´®
+    void scanNumber(); //Á¬ĞøÉ¨Ãèµ±Ç°Êı×Ö´®£¬×¢ÒâÇø·ÖĞ¡Êıµã
     Token create(TokenKind kind, int tokenLine, int tokenNum, string tokenString);
-    bool lookupKeyword(string targetStr, TokenKind &kind); //æŸ¥æ‰¾ç›®æ ‡å­å­—ç¬¦ä¸²æ˜¯å¦ä¸ºå…³é”®å­—
+    bool lookupKeyword(string targetStr, TokenKind& kind); //²éÕÒÄ¿±ê×Ó×Ö·û´®ÊÇ·ñÎª¹Ø¼ü×Ö
 };
-bool isChar(const char &ch);
-bool isNum(const char &ch);
-bool isOperator(const char &ch);
-bool isCmpOperator(const char &ch);
+bool isChar(const char& ch);
+bool isNum(const char& ch);
+bool isOperator(const char& ch);
+bool isCmpOperator(const char& ch);
 

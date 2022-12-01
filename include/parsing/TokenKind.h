@@ -2,13 +2,13 @@
 #define TOKENKIND_H
 #include "allinclude.h"
 
-enum class TokenKind : std::uint16_t{
+enum class TokenKind : std::uint16_t {
     Unknown,
     EndOfFile,
     Identifier,
     SystemIdentifier,
-    StringLiteral, //å­—ç¬¦ä¸²
-    IntegerLiteral,                                                                                                                                                                            
+    StringLiteral, //×Ö·û´®
+    IntegerLiteral,
     IntegerBase,
     UnbasedUnsizedLiteral,
     RealLiteral,
