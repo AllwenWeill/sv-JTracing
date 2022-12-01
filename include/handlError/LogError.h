@@ -1,5 +1,6 @@
+#ifndef _LOGERROR_H
+#define _LOGERROR_H
 #include "allinclude.h"
-
 struct errorInformation{ //报错信息结构体
     int lineNum;
     string errorStr;
@@ -12,3 +13,4 @@ public:
     void addnote(string errorStr, int lineNum); //添加报错信息至errorNotes队列
 private:
 };
+#endif

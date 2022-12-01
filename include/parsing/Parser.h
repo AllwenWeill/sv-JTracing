@@ -1,24 +1,32 @@
 #include "allinclude.h"
 #include "Token.h"
+#include "TokenKind.h"
 #include "LogError.h"
-#include "ExprAST.h"
+#include "allAST.h"
 class Parser{
 public:
     Parser(vector<Token> tokenVector);
     ~Parser();
-    void getNextToken();
-    std::shared_ptr<ExprAST> parsePrimary();
     LogError LE;
     Token curToken;
     TokenKind curTokenKind;
     void mainParser();
 private:
-    static unsigned long int offset_count;
+    unsigned long int m_offset;
+    unordered_map<char, int> BinopPrecedence_umap;
     vector<Token> m_tokenVector;
-    std::shared_ptr<PrototypeAST> parseModulePrototype();
-    std::shared_ptr<DefinitionAST> parseModuleDefinition();
+    std::shared_ptr<ExprAST> parsePrimary();
+    std::shared_ptr<DefinitionAST> parseModule();
+    std::shared_ptr<PrototypeAST> ParseModulePrototype();
+    std::shared_ptr<DefinitionAST> ParseModuleDefinition();
     std::shared_ptr<ExprAST> ParseParenExpr();
-    std::shared_ptr<VariableExprAST> ParseIdentifierExpr();
+    std::shared_ptr<ExprAST> ParseIdentifierExpr();
     std::shared_ptr<ExprAST> ParseExpression();
     std::shared_ptr<ExprAST> ParseNumber();
+    std::shared_ptr<ExprAST> ParseBinOpRHS(int ExprPrec, std::shared_ptr<ExprAST> LHS);
+    void getNextToken();
+    void buildBinopPrecedence();
+    int GetTokPrecedence();
+    void handlModule();
+    void showErrorInformation();
 };

@@ -2,13 +2,17 @@ INCLUDE_PATH = -I./include/preprocessing/
 INCLUDE_PATH += -I./include/parsing/
 INCLUDE_PATH += -I./include/utility/
 INCLUDE_PATH += -I./include/syntax/
+INCLUDE_PATH += -I./include/ast/
+INCLUDE_PATH += -I./include/handlError/
 
 SRC_PATH = source/main.cpp
 SRC_PATH += source/preprocessing/SourceManager.cpp
 SRC_PATH += source/parsing/Lexer.cpp
 SRC_PATH += source/parsing/Token.cpp
+SRC_PATH += source/parsing/Parser.cpp
+SRC_PATH += source/handlError/LogError.cpp
 
-OFILE = main.o SourceManager.o Lexer.o Token.o
+OFILE = main.o SourceManager.o Lexer.o Token.o LogError.o Parser.o
 
 Q = @
 COMPILE = /usr/bin/
@@ -44,6 +48,14 @@ Lexer.o: source/parsing/Lexer.cpp
 Token.o: source/parsing/Token.cpp
 	${ECHO} "cxx Token.cpp"
 	${CXX} ${CXXFLAGS} -c source/parsing/Token.cpp -o Token.o
+
+Parser.o: source/parsing/Parser.cpp
+	${ECHO} "cxx Parser.cpp"
+	${CXX} ${CXXFLAGS} -c source/parsing/Parser.cpp -o Parser.o
+
+LogError.o: source/handlError/LogError.cpp
+	${ECHO} "cxx LogError.cpp"
+	${CXX} ${CXXFLAGS} -c source/handlError/LogError.cpp -o LogError.o
 
 .PHONY : clean
 clean :

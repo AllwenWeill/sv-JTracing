@@ -11,4 +11,5 @@ void LogError::addnote(string errorStr, int lineNum){//添加报错信息至erro
     errorNote += ": Error: ";
     errorNote += errorStr;
     errorNote += ". /n";
+    errorNotes.push_back(errorNote);
 } 

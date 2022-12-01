@@ -13,6 +13,7 @@ public:
     ~Lexer();
     void scanText();
     static bool isKeyword(TokenKind kind);
+    vector<Token> getTokenVector();
 private:
     vector<string> keywords;
     vector<Token> tokenVector;

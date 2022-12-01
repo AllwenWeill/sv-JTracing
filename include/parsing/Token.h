@@ -1,3 +1,6 @@
+#ifndef _TOKEN_H
+#define _TOKEN_H
+
 #include "allinclude.h"
 #include "TokenKind.h"
 struct TokenLocation{
@@ -20,3 +23,4 @@ private:
     string m_tokenkindStr;
 };
 string_view toString(TokenKind kind);
+#endif
