@@ -4,4 +4,5 @@ class NumberExprAST : public ExprAST {
 
 public:
     NumberExprAST(double Val) : Val(Val) {}
+    ~NumberExprAST(){}
 };

@@ -11,4 +11,5 @@ public:
     : Name(name), Args(std::move(Args)) {}
 
   const std::string &getName() const { return Name; }
+  ~PrototypeAST(){}
 };

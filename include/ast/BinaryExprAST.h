@@ -1,10 +1,11 @@
 #include "ExprAST.h"
 class BinaryExprAST : public ExprAST {
-  char Op;
-  std::unique_ptr<ExprAST> LHS, RHS;
+  string Op;
+  std::shared_ptr<ExprAST> LHS, RHS;
 
 public:
-  BinaryExprAST(char op, std::unique_ptr<ExprAST> LHS,
-                std::unique_ptr<ExprAST> RHS)
+    BinaryExprAST(string op, std::shared_ptr<ExprAST> LHS,
+                std::shared_ptr<ExprAST> RHS)
     : Op(op), LHS(std::move(LHS)), RHS(std::move(RHS)) {}
+    ~BinaryExprAST(){}
 };
