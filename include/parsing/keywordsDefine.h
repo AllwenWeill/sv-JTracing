@@ -1,4 +1,4 @@
-//å·²è¡¥å……è‡³2012
+//ÒÑ²¹³äÖÁ2012
 #define KEYWORDS_1364_1995 \
     { "always", TokenKind::AlwaysKeyword },\
     { "and", TokenKind::AndKeyword },\

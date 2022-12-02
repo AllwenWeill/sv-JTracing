@@ -4,8 +4,8 @@
 #include "allinclude.h"
 #include "TokenKind.h"
 struct TokenLocation{
-    int m_tokenLine; //Tokenæ‰€åœ¨è¡Œå·
-    int m_tokenNum; //Tokenæ‰€å­˜å‚¨çš„ä½ç½®æ¬¡åº
+    int m_tokenLine; //TokenËùÔÚĞĞºÅ
+    int m_tokenNum; //TokenËù´æ´¢µÄÎ»ÖÃ´ÎĞò
 };
 class Token{
 public:
@@ -13,9 +13,9 @@ public:
     Token(){};
     Token(TokenKind kind,int tokenNum, int tokenLine, string tokenString);
     ~Token();
-    string getTokenKindStr(); //è¿”å›TokenKindçš„å­—ç¬¦ä¸²ï¼Œä¾¿äºè°ƒè¯•
-    string getTokenStr(); //è¿”å›è¯¥Tokençš„å®é™…å­—ç¬¦ä¸²
-    TokenKind getTokenKind(); //è¿”å›TokenKind
+    string getTokenKindStr(); //·µ»ØTokenKindµÄ×Ö·û´®£¬±ãÓÚµ÷ÊÔ
+    string getTokenStr(); //·µ»Ø¸ÃTokenµÄÊµ¼Ê×Ö·û´®
+    TokenKind getTokenKind(); //·µ»ØTokenKind
 private:
     string tokenString;
     TokenKind m_kind;
