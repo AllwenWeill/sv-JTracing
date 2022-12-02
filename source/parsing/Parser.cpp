@@ -3,26 +3,26 @@ Parser::Parser(vector<Token> tokenVector)
     :m_tokenVector(tokenVector)
 {
     m_offset = 0;
-    if(m_tokenVector.size() != 0){
+    if (m_tokenVector.size() != 0) {
         curToken = m_tokenVector[0];
         curTokenKind = curToken.getTokenKind();
     }
     mainParser();
 }
 
-Parser::~Parser(){
+Parser::~Parser() {
     showErrorInformation();
 }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
-void Parser::mainParser(){
-    for(int i = 0; i < m_tokenVector.size(); i++){
-        cout<<"ready> ";
-        switch(curTokenKind){
+
+void Parser::mainParser() {
+    for (int i = 0; i < m_tokenVector.size(); i++) {
+        cout << "ready> ";
+        switch (curTokenKind) {
         case TokenKind::ModuleKeyword:
             handlModule();
             break;
         case TokenKind::EndOfFile:
-            return ;
+            return;
         case TokenKind::Semicolon:
             getNextToken();
             break;
@@ -33,19 +33,19 @@ void Parser::mainParser(){
     }
 }
 
-void Parser::getNextToken(){
+void Parser::getNextToken() {
     curToken = m_tokenVector[m_offset++];
     curTokenKind = curToken.getTokenKind();
 }
 
-std::shared_ptr<ExprAST> Parser::parsePrimary(){ //è§£æåˆçº§è¡¨è¾¾å¼
+std::shared_ptr<ExprAST> Parser::parsePrimary() { //½âÎö³õ¼¶±í´ïÊ½
     getNextToken();
-    switch(curTokenKind){
+    switch (curTokenKind) {
     case TokenKind::Identifier:
         return ParseIdentifierExpr();
     case TokenKind::IntegerLiteral:
         return ParseNumber();
-    case TokenKind::Unknown:{
+    case TokenKind::Unknown: {
         string tmpStr = "Unknown the ";
         tmpStr += curToken.getTokenStr();
         LE.addnote(tmpStr, curToken.TL.m_tokenLine);
@@ -58,7 +58,7 @@ std::shared_ptr<ExprAST> Parser::parsePrimary(){ //è§£æåˆçº§è¡¨è¾¾å¼
     }
 }
 
-std::shared_ptr<ExprAST> Parser::ParseNumber(){
+std::shared_ptr<ExprAST> Parser::ParseNumber() {
     string s = curToken.getTokenStr();
     int numVal = atoi(s.c_str());
     auto Result = std::make_shared<NumberExprAST>(numVal);
@@ -66,9 +66,9 @@ std::shared_ptr<ExprAST> Parser::ParseNumber(){
     return std::move(Result);
 }
 
-// std::shared_ptr<PrototypeAST> Parser::ParseModulePrototype(){ //è§£æmoduleå£°æ˜ï¼ˆå¯èƒ½ä¸éœ€è¦ï¼Ÿï¼‰
+// std::shared_ptr<PrototypeAST> Parser::ParseModulePrototype(){ //½âÎömoduleÉùÃ÷£¨¿ÉÄÜ²»ĞèÒª£¿£©
 //     getNextToken();
-//     if(curTokenKind != TokenKind::Identifier){ //moduleéœ€è¦æœ‰moduleå
+//     if(curTokenKind != TokenKind::Identifier){ //moduleĞèÒªÓĞmoduleÃû
 //         LE.addnote("expected function name in module", curToken.TL.m_tokenLine);
 //         return nullptr;
 //     }
@@ -81,40 +81,40 @@ std::shared_ptr<ExprAST> Parser::ParseNumber(){
 //     return std::make_shared<PrototypeAST>(moduleName);
 // }
 
-std::shared_ptr<DefinitionAST> Parser::ParseModuleDefinition(){ //è§£æmoduleå®ç°
+std::shared_ptr<DefinitionAST> Parser::ParseModuleDefinition() { //½âÎömoduleÊµÏÖ
     getNextToken();
-    if(curTokenKind != TokenKind::Identifier){ //moduleéœ€è¦æœ‰moduleå
+    if (curTokenKind != TokenKind::Identifier) { //moduleĞèÒªÓĞmoduleÃû
         LE.addnote("expected function name in module", curToken.TL.m_tokenLine);
         return nullptr;
     }
     std::string moduleName = curToken.getTokenStr();
     getNextToken();
-    if(curTokenKind != TokenKind::Semicolon){
+    if (curTokenKind != TokenKind::Semicolon) {
         LE.addnote("expected ';'", curToken.TL.m_tokenLine);
         return nullptr;
     }
     std::vector<shared_ptr<ExprAST>> Exprs;
-    while(curTokenKind != TokenKind::EndModuleKeyword){
+    while (curTokenKind != TokenKind::EndModuleKeyword) {
         getNextToken();
-        if(curTokenKind == TokenKind::EndModuleKeyword)
+        if (curTokenKind == TokenKind::EndModuleKeyword)
             break;
-        if(m_offset == m_tokenVector.size()-1 && curTokenKind != TokenKind::EndModuleKeyword){
+        if (m_offset == m_tokenVector.size() - 1 && curTokenKind != TokenKind::EndModuleKeyword) {
             LE.addnote("expected 'endmodule'", curToken.TL.m_tokenLine);
             break;
         }
         auto V = ParseExpression();
-        if(V != nullptr)
+        if (V != nullptr)
             Exprs.push_back(V);
     }
     return std::make_shared<DefinitionAST>(moduleName, Exprs);
 }
 
-std::shared_ptr<ExprAST> Parser::ParseParenExpr(){
+std::shared_ptr<ExprAST> Parser::ParseParenExpr() {
     getNextToken(); // eat (.
     auto V = ParseExpression();
     if (!V)
         return nullptr;
-    if (curToken.getTokenKind() != TokenKind::CloseParenthesis){
+    if (curToken.getTokenKind() != TokenKind::CloseParenthesis) {
         LE.addnote("expected ')'", curToken.TL.m_tokenLine);
         return nullptr;
     }
@@ -122,34 +122,34 @@ std::shared_ptr<ExprAST> Parser::ParseParenExpr(){
     return V;
 }
 
-std::shared_ptr<ExprAST> Parser::ParseIdentifierExpr(){
+std::shared_ptr<ExprAST> Parser::ParseIdentifierExpr() {
     std::string IdName = curToken.getTokenStr();
     getNextToken();
-    auto V = std::make_shared<VariableExprAST>(IdName); //éœ€è¦åˆ¤æ–­åé¢æ˜¯å¦ä¸º;å·?
+    auto V = std::make_shared<VariableExprAST>(IdName); //ĞèÒªÅĞ¶ÏºóÃæÊÇ·ñÎª;ºÅ?
     return std::move(V);
 }
 
-std::shared_ptr<ExprAST> Parser::ParseExpression(){
+std::shared_ptr<ExprAST> Parser::ParseExpression() {
     auto LHS = parsePrimary();
     if (!LHS)
         return nullptr;
     return ParseBinOpRHS(0, std::move(LHS));
 }
 
-std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<ExprAST> LHS){
-    while(1){
-        int curTokenPrec = GetTokPrecedence(); //è·å–å½“å‰Tokenè¿ç®—ç¬¦çš„ä¼˜å…ˆçº§
-        if(curTokenPrec < ExprPrec)
+std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<ExprAST> LHS) {
+    while (1) {
+        int curTokenPrec = GetTokPrecedence(); //»ñÈ¡µ±Ç°TokenÔËËã·ûµÄÓÅÏÈ¼¶
+        if (curTokenPrec < ExprPrec)
             return LHS;
         string BinOp = curToken.getTokenStr();
         auto RHS = parsePrimary();
-        if(!RHS)
+        if (!RHS)
             return nullptr;
         getNextToken();
-        int nextOpPrec = GetTokPrecedence(); //è·å–ä¸‹ä¸€ä¸ªè¿ç®—ç¬¦çš„ä¼˜å…ˆçº§
-        if(curTokenPrec < nextOpPrec){
-            RHS = ParseBinOpRHS(curTokenPrec+1, std::move(RHS));
-            if(RHS == nullptr)
+        int nextOpPrec = GetTokPrecedence(); //»ñÈ¡ÏÂÒ»¸öÔËËã·ûµÄÓÅÏÈ¼¶
+        if (curTokenPrec < nextOpPrec) {
+            RHS = ParseBinOpRHS(curTokenPrec + 1, std::move(RHS));
+            if (RHS == nullptr)
                 return nullptr;
         }
         // Merge LHS/RHS.
@@ -157,7 +157,7 @@ std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<Exp
     }
 }
 
-void Parser::buildBinopPrecedence(){
+void Parser::buildBinopPrecedence() {
     BinopPrecedence_umap['<'] = 10;
     BinopPrecedence_umap['>'] = 10;
     BinopPrecedence_umap['+'] = 20;
@@ -169,46 +169,46 @@ void Parser::buildBinopPrecedence(){
     BinopPrecedence_umap['|'] = 40;
 }
 
-int Parser::GetTokPrecedence(){
-    if(curToken.getTokenStr() == "="){
+int Parser::GetTokPrecedence() {
+    if (curToken.getTokenStr() == "=") {
         return 1;
     }
-    else if(curToken.getTokenStr() != "+" //å¢åŠ å¯¹curTokenKindçš„åˆ¤æ–­ï¼Œå¢å¼ºå‡½æ•°å¥å£®æ€§
-    || curToken.getTokenStr() != "-" 
-    || curToken.getTokenStr() != "*"
-    || curToken.getTokenStr() != "/"
-    || curToken.getTokenStr() != "%"
-    || curToken.getTokenStr() != "&"
-    || curToken.getTokenStr() != "|"
-    || curToken.getTokenStr() != "<"
-    || curToken.getTokenStr() != ">"
-    ){
+    else if (curToken.getTokenStr() != "+" //Ôö¼Ó¶ÔcurTokenKindµÄÅĞ¶Ï£¬ÔöÇ¿º¯Êı½¡×³ĞÔ
+        || curToken.getTokenStr() != "-"
+        || curToken.getTokenStr() != "*"
+        || curToken.getTokenStr() != "/"
+        || curToken.getTokenStr() != "%"
+        || curToken.getTokenStr() != "&"
+        || curToken.getTokenStr() != "|"
+        || curToken.getTokenStr() != "<"
+        || curToken.getTokenStr() != ">"
+        ) {
         perror("GetTokPrecedence()");
         exit(-1);
     }
     int TokPrec = BinopPrecedence_umap[curToken.getTokenStr().at(0)];
-    if (TokPrec <= 0) 
+    if (TokPrec <= 0)
         return -1;
     return TokPrec;
 }
 
-std::shared_ptr<DefinitionAST> Parser::parseModule(){
+std::shared_ptr<DefinitionAST> Parser::parseModule() {
     getNextToken();
-    return ParseModuleDefinition(); //æ­¤å¤„æ— æ³•æ˜ç¡®åˆ°åº•æ˜¯è§£æmoduleå£°æ˜è¿˜æ˜¯å®šä¹‰ï¼Ÿ
+    return ParseModuleDefinition(); //´Ë´¦ÎŞ·¨Ã÷È·µ½µ×ÊÇ½âÎömoduleÉùÃ÷»¹ÊÇ¶¨Òå£¿
 }
 
-void Parser::handlModule(){
-    if(parseModule()){
-        cout<<"Parsed a module prototype."<<endl;
+void Parser::handlModule() {
+    if (parseModule()) {
+        cout << "Parsed a module prototype." << endl;
     }
-    else{
+    else {
         getNextToken();
     }
 }
 
-void Parser::showErrorInformation(){
-    cout<<"------------------------"<<endl;
-    for(auto errorNote : LE.errorNotes){
-        cout<<errorNote<<endl;
+void Parser::showErrorInformation() {
+    cout << "------------------------" << endl;
+    for (auto errorNote : LE.errorNotes) {
+        cout << errorNote << endl;
     }
 }

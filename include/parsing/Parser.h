@@ -3,7 +3,7 @@
 #include "TokenKind.h"
 #include "LogError.h"
 #include "allAST.h"
-class Parser{
+class Parser {
 public:
     Parser(vector<Token> tokenVector);
     ~Parser();

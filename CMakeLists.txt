@@ -8,9 +8,9 @@ project ("sv-JTracing")
 # 将源代码添加到此项目的可执行文件。
 add_subdirectory (source)
 
-include_directories (./include/parsing/ ./include/preprocessing ./include/syntax ./include/utility)
+include_directories (./include/parsing/ ./include/preprocessing ./include/syntax ./include/utility ./include/ast ./include/handlError)
 
-add_executable (sv-JTracing "source/main.cpp" "sv-JTracing.h"  "source/parsing/Lexer.cpp" "include/parsing/Lexer.h" "include/parsing/keywordsDefine.h" "include/parsing/Token.h" "include/parsing/TokenKind.h" "include/utility/allinclude.h" "include/utility/Allocator.h" "include/preprocessing/SourceManager.h" "include/syntax/SyntaxNode.h" "source/parsing/Token.cpp" "source/preprocessing/SourceManager.cpp" "source/utility/Allocator.cpp")
+add_executable (sv-JTracing "source/main.cpp" "sv-JTracing.h"  "source/parsing/Lexer.cpp" "include/parsing/Lexer.h" "include/parsing/keywordsDefine.h" "include/parsing/Token.h" "include/parsing/TokenKind.h" "include/utility/allinclude.h" "include/utility/Allocator.h" "include/preprocessing/SourceManager.h" "include/syntax/SyntaxNode.h" "source/parsing/Token.cpp" "source/preprocessing/SourceManager.cpp" "source/utility/Allocator.cpp" "include/parsing/Parser.h" "source/parsing/Parser.cpp" "include/handlError/LogError.h" "source/handlError/LogError.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET sv-JTracing PROPERTY CXX_STANDARD 20)
