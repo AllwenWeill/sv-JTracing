@@ -52,9 +52,13 @@ void Lexer::scanText(){
                 }
                 break;
             default:  //说明为普通文字字符，而非空格注释等trivial things
-                if(isChar(tempCh)){ //如果是字母（关键字，变量名称，字符串）
-                    scanLetter(); //连续扫描当前字母串
+                if(isChar(tempCh)){ //如果是字母（关键字，变量名称）
+                    scanLetter(); //连续扫描当前字母串（此处待完善，变量名可以_下划线开头）
                     break;
+                }
+                else if(tempCh == '"'){ //如果是双引号，则为字符串文本
+                    scanString(); //连续扫描字符串
+                    advance();
                 }
                 else if(isNum(tempCh)){ //如果是数字
                     scanNumber(); //连续扫描当前数字串，注意区分小数点
@@ -118,8 +122,9 @@ void Lexer::scanText(){
                             advance();
                             break;
                         }
-                        else if(nextCh == ' '){
+                        else if(nextCh == ' '){ //说明只有一个等号=
                             keywords.push_back(tempStr);
+                            tokenVector.push_back(create(TokenKind::Equals, lineNum, keywords.size()-1, "="));
                             tempStr.clear();
                             break;
                         }
@@ -172,6 +177,18 @@ void Lexer::scanText(){
                         break;
                     }
                 }
+                else if(tempCh == ';'){
+                    tokenVector.push_back(create(TokenKind::Semicolon, lineNum, keywords.size()-1, ";"));
+                    advance();
+                }
+                else if(tempCh == '('){ //如果括号与文本中无空格相连，则无法检测到
+                    tokenVector.push_back(create(TokenKind::OpenParenthesis, lineNum, keywords.size()-1, "("));
+                    advance();
+                }
+                else if(tempCh == ')'){
+                    tokenVector.push_back(create(TokenKind::CloseParenthesis, lineNum, keywords.size()-1, ")"));
+                    advance();
+                }
                 else{
                     advance();
                 }
@@ -185,7 +202,7 @@ void Lexer::scanText(){
     }
     cout<<"TokenKind:------------"<<endl;
     for(auto k : tokenVector){
-        cout<<k.getTokenStr()<<":"<<k.getTokenKind()<<"行号:"<<k.TL.m_tokenLine<<endl;
+        cout<<k.getTokenStr()<<":"<<k.getTokenKindStr()<<"行号:"<<k.TL.m_tokenLine<<endl;
     }
 }
 void Lexer::advance(){
@@ -195,7 +212,13 @@ void Lexer::advance(int count){
     offset_count += count;
 }
 bool Lexer::islastChar(){//用'/0'也可以判断，但是不够
-    return offset_count >= m_indexOffset;
+    if(offset_count >= m_indexOffset){
+        tokenVector.push_back(create(TokenKind::EndOfFile, lineNum, keywords.size()-1, "EOF"));
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 void Lexer::scanBlockComment(){
     while(true){
@@ -278,11 +301,16 @@ void Lexer::scanLetter(){
     while(true){
         advance();
         char tempCh = (*m_psm).at(offset_count);
+        //if(tempCh == '(') //可能需要加扫描D(x)这种情况
         if(tempCh == ' ' || tempCh == 0x0a || !isChar(tempCh)){ //如果遇到空格或者换行
             keywords.push_back(tmpStr);
             TokenKind kind;
-            lookupKeyword(tmpStr, kind);
-            tokenVector.push_back(create(kind, lineNum, keywords.size()-1, tmpStr)); //初步创建Token
+            if(lookupKeyword(tmpStr, kind)){ //说明是关键字
+                tokenVector.push_back(create(kind, lineNum, keywords.size()-1, tmpStr)); //初步创建Token
+            }
+            else{ //说明是变量名或者错误(待完善匹配错误)，没有区分标识符或者错误关键字
+                tokenVector.push_back(create(TokenKind::Identifier, lineNum, keywords.size()-1, tmpStr)); 
+            }
             return ;
         }
         else{
@@ -290,7 +318,25 @@ void Lexer::scanLetter(){
         }
     }
 }
-void Lexer::scanNumber(){ //需要区分小数点(也可能不用区分，只需要识别小数点即可)
+void Lexer::scanString(){
+    string tmpStr;
+    while(true){
+        advance();
+        char tempCh = (*m_psm).at(offset_count);
+        if(tempCh == '"'){ //如果扫描到双引号的结尾
+            tokenVector.push_back(create(TokenKind::StringLiteral, lineNum, keywords.size()-1, tmpStr));
+            return ;
+        }
+        else if(islastChar()){
+            perror("scanString:");
+            exit(-1);
+        }
+        else{
+            tmpStr.push_back(tempCh);
+        }
+    }
+}
+void Lexer::scanNumber(){ //需要区分小数点(也可能不用区分，只需要识别小数点即可)，不能出现多个小数点
     bool isDecimal = false;
     string tmpStr;
     tmpStr.push_back((*m_psm).at(offset_count));
@@ -325,7 +371,9 @@ bool Lexer::lookupKeyword(string targetStr, TokenKind &kind){ //查找目标子�
     return false;
 } 
 
-
+vector<Token> Lexer::getTokenVector(){
+    return tokenVector;
+}
 
 bool Lexer::isKeyword(TokenKind kind) {
     switch (kind) {
@@ -578,6 +626,7 @@ bool Lexer::isKeyword(TokenKind kind) {
         case TokenKind::WOrKeyword:
         case TokenKind::XnorKeyword:
         case TokenKind::XorKeyword:
+        case TokenKind::DefineKeyword:
             return true;
         default:
             return false;

@@ -1,7 +1,6 @@
 module m;
     // hello
-    string s = "FOO";
+    int a = 6 + 5;
 
     begin end
 endmodule
-

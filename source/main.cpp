@@ -1,5 +1,7 @@
 //#include "SourceManager.h"
 #include "Lexer.h"
+#include "LogError.h"
+#include "Parser.h"
 int main(int argc, char* argv[]){
     cout<<"输入.sv文件路径:";
     fs::path fp;
@@ -12,5 +14,6 @@ int main(int argc, char* argv[]){
     cout<<"------------"<<endl;
     Lexer lex(psm, SM.fd.filesize);
     cout<<endl;
+    Parser par(lex.getTokenVector());
     return 0;
 }

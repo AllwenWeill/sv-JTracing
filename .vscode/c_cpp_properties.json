@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${default}",
+                "${workspaceFolder}/include/**",
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/include/parsing",
+                "${workspaceFolder}/include/preprocessing",
+                "${workspaceFolder}/include/syntax",
+                "${workspaceFolder}/include/handlError"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "intelliSenseMode": "linux-gcc-x64",
+            "configurationProvider": "ms-vscode.makefile-tools"
+        }
+    ],
+    "version": 4
+}

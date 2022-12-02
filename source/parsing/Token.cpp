@@ -10,11 +10,14 @@ Token::Token(TokenKind kind, int tokenNum, int tokenLine, string tokenString)
 }
 Token::~Token(){
 }
-string_view Token::getTokenKind(){
+string Token::getTokenKindStr(){
     return m_tokenkindStr;
 }
-string_view Token::getTokenStr(){
+string Token::getTokenStr(){
     return m_tokenString;
+}
+TokenKind Token::getTokenKind(){
+    return m_kind;
 }
 string_view toString(TokenKind kind) {
     switch (kind) {
@@ -360,6 +363,7 @@ string_view toString(TokenKind kind) {
         case TokenKind::WOrKeyword: return "WOrKeyword";
         case TokenKind::XnorKeyword: return "XnorKeyword";
         case TokenKind::XorKeyword: return "XorKeyword";
+        case TokenKind::DefineKeyword: return "DefineKeyword";
         case TokenKind::UnitSystemName: return "UnitSystemName";
         case TokenKind::RootSystemName: return "RootSystemName";
         case TokenKind::Directive: return "Directive";

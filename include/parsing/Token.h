@@ -1,3 +1,6 @@
+#ifndef _TOKEN_H
+#define _TOKEN_H
+
 #include "allinclude.h"
 #include "TokenKind.h"
 struct TokenLocation{
@@ -7,14 +10,17 @@ struct TokenLocation{
 class Token{
 public:
     TokenLocation TL;
+    Token(){};
     Token(TokenKind kind,int tokenNum, int tokenLine, string tokenString);
     ~Token();
-    string_view getTokenKind(); //返回TokenKind的字符串，便于调试
-    string_view getTokenStr(); //返回该Token的实际字符串
+    string getTokenKindStr(); //返回TokenKind的字符串，便于调试
+    string getTokenStr(); //返回该Token的实际字符串
+    TokenKind getTokenKind(); //返回TokenKind
 private:
     string tokenString;
     TokenKind m_kind;
     string m_tokenString;
-    string_view m_tokenkindStr;
+    string m_tokenkindStr;
 };
 string_view toString(TokenKind kind);
+#endif

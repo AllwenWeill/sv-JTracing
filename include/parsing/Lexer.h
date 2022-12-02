@@ -13,6 +13,7 @@ public:
     ~Lexer();
     void scanText();
     static bool isKeyword(TokenKind kind);
+    vector<Token> getTokenVector();
 private:
     vector<string> keywords;
     vector<Token> tokenVector;
@@ -29,6 +30,7 @@ private:
     void scanLineComment();//即用"//",用"//"来注释则一整行均被注释，因此需扫描换行符为本行尾部来跳过注释
     void scanLetter(); //连续扫描当前字母串
     void scanNumber(); //连续扫描当前数字串，注意区分小数点
+    void scanString(); //连续扫描字符串
     Token create(TokenKind kind, int tokenLine, int tokenNum, string tokenString);
     bool lookupKeyword(string targetStr, TokenKind &kind); //查找目标子字符串是否为关键字
 };

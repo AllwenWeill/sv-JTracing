@@ -345,6 +345,7 @@ enum class TokenKind : std::uint16_t{
     WOrKeyword,
     XnorKeyword,
     XorKeyword,
+    DefineKeyword,
     UnitSystemName,
     RootSystemName,
     Directive,
