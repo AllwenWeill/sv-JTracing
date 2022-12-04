@@ -346,7 +346,7 @@ void Lexer::scanNumber(){ //需要区分小数点(也可能不用区分，只需要识别小数点即可)
         if(tempCh == '.'){
             isDecimal = true;
         }
-        else if(tempCh == ' ' || tempCh == 0x0a || isNum(tempCh)){ //如果遇到空格或者换行
+        else if(tempCh == ' ' || tempCh == 0x0a || !isNum(tempCh)){ //如果遇到空格或者换行
             keywords.push_back(tmpStr);
             if(isDecimal){
                 tokenVector.push_back(create(TokenKind::IntegerLiteral, lineNum, keywords.size()-1, tmpStr)); //添加小数Token，好像不用区分小数

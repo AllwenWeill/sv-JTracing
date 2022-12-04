@@ -3,6 +3,7 @@ Parser::Parser(vector<Token> tokenVector)
     :m_tokenVector(tokenVector)
 {
     m_offset = 0;
+    buildBinopPrecedence();
     if (m_tokenVector.size() != 0) {
         curToken = m_tokenVector[0];
         curTokenKind = curToken.getTokenKind();
@@ -15,8 +16,8 @@ Parser::~Parser() {
 }
 
 void Parser::mainParser() {
-    for (int i = 0; i < m_tokenVector.size(); i++) {
-        cout << "ready> ";
+    while(m_offset < m_tokenVector.size() - 1) {
+        cout << "ready> "<<endl;
         switch (curTokenKind) {
         case TokenKind::ModuleKeyword:
             handlModule();
@@ -39,6 +40,17 @@ void Parser::getNextToken() {
 }
 
 std::shared_ptr<ExprAST> Parser::parsePrimary() { //½âÎö³õ¼¶±í´ïÊ½
+    switch (curTokenKind) {
+    case TokenKind::Unknown: {
+        string tmpStr = "Unknown the ";
+        tmpStr += curToken.getTokenStr();
+        LE.addnote(tmpStr, curToken.TL.m_tokenLine);
+        return nullptr;
+    }
+    case TokenKind::BeginKeyword:
+        auto V = ParseBegin();
+        return std::move(V);
+    }
     getNextToken();
     switch (curTokenKind) {
     case TokenKind::Identifier:
@@ -91,7 +103,7 @@ std::shared_ptr<DefinitionAST> Parser::ParseModuleDefinition() { //½âÎömoduleÊµÏ
     getNextToken();
     if (curTokenKind != TokenKind::Semicolon) {
         LE.addnote("expected ';'", curToken.TL.m_tokenLine);
-        return nullptr;
+        //return nullptr;
     }
     std::vector<shared_ptr<ExprAST>> Exprs;
     while (curTokenKind != TokenKind::EndModuleKeyword) {
@@ -107,6 +119,22 @@ std::shared_ptr<DefinitionAST> Parser::ParseModuleDefinition() { //½âÎömoduleÊµÏ
             Exprs.push_back(V);
     }
     return std::make_shared<DefinitionAST>(moduleName, Exprs);
+}
+
+std::shared_ptr<ExprAST> Parser::ParseBegin() {
+    cout << "->parsed a Begin" << endl;
+    getNextToken();
+    std::vector<shared_ptr<ExprAST>> Exprs;
+    while (curTokenKind != TokenKind::EndKeyword) {
+        if (m_offset == m_tokenVector.size() - 1 && curTokenKind != TokenKind::EndKeyword) {
+            LE.addnote("expected 'end'", curToken.TL.m_tokenLine);
+            break;
+        }
+        auto V = ParseExpression();
+        if (V != nullptr)
+            Exprs.push_back(V);
+    }
+    return std::move(std::make_shared<BeginAST>(Exprs));
 }
 
 std::shared_ptr<ExprAST> Parser::ParseParenExpr() {
@@ -137,6 +165,9 @@ std::shared_ptr<ExprAST> Parser::ParseExpression() {
 }
 
 std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<ExprAST> LHS) {
+    if (curTokenKind == TokenKind::Semicolon)
+        return nullptr;
+    cout << "->parsing a Binary Expression..." << endl;
     while (1) {
         int curTokenPrec = GetTokPrecedence(); //»ñÈ¡µ±Ç°TokenÔËËã·ûµÄÓÅÏÈ¼¶
         if (curTokenPrec < ExprPrec)
@@ -145,7 +176,6 @@ std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<Exp
         auto RHS = parsePrimary();
         if (!RHS)
             return nullptr;
-        getNextToken();
         int nextOpPrec = GetTokPrecedence(); //»ñÈ¡ÏÂÒ»¸öÔËËã·ûµÄÓÅÏÈ¼¶
         if (curTokenPrec < nextOpPrec) {
             RHS = ParseBinOpRHS(curTokenPrec + 1, std::move(RHS));
@@ -170,23 +200,25 @@ void Parser::buildBinopPrecedence() {
 }
 
 int Parser::GetTokPrecedence() {
-    if (curToken.getTokenStr() == "=") {
+    string curStr = curToken.getTokenStr();
+    if (curStr == "=") {
         return 1;
     }
-    else if (curToken.getTokenStr() != "+" //Ôö¼Ó¶ÔcurTokenKindµÄÅÐ¶Ï£¬ÔöÇ¿º¯Êý½¡×³ÐÔ
-        || curToken.getTokenStr() != "-"
-        || curToken.getTokenStr() != "*"
-        || curToken.getTokenStr() != "/"
-        || curToken.getTokenStr() != "%"
-        || curToken.getTokenStr() != "&"
-        || curToken.getTokenStr() != "|"
-        || curToken.getTokenStr() != "<"
-        || curToken.getTokenStr() != ">"
+    else if (curStr != "+" //Ôö¼Ó¶ÔcurTokenKindµÄÅÐ¶Ï£¬ÔöÇ¿º¯Êý½¡×³ÐÔ
+        && curStr != "-"
+        && curStr != "*"
+        && curStr != "/"
+        && curStr != "%"
+        && curStr != "&"
+        && curStr != "|"
+        && curStr != "<"
+        && curStr != ">"
         ) {
-        perror("GetTokPrecedence()");
-        exit(-1);
+        LE.addnote("expcted an operator", curToken.TL.m_tokenLine);
+        return -1;
     }
-    int TokPrec = BinopPrecedence_umap[curToken.getTokenStr().at(0)];
+    char chOp = curStr.at(0);
+    int TokPrec = BinopPrecedence_umap[chOp];
     if (TokPrec <= 0)
         return -1;
     return TokPrec;
@@ -199,7 +231,7 @@ std::shared_ptr<DefinitionAST> Parser::parseModule() {
 
 void Parser::handlModule() {
     if (parseModule()) {
-        cout << "Parsed a module prototype." << endl;
+        cout << "parsed a Module!" << endl;
     }
     else {
         getNextToken();
@@ -209,6 +241,6 @@ void Parser::handlModule() {
 void Parser::showErrorInformation() {
     cout << "------------------------" << endl;
     for (auto errorNote : LE.errorNotes) {
-        cout << errorNote << endl;
+        cout << errorNote;
     }
 }
