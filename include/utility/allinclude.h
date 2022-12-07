@@ -12,5 +12,10 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
+
+#ifdef __linux__
 #include <error.h>
+#endif // __linux__
+
+
 using namespace std;

@@ -2,22 +2,22 @@
 #include <filesystem>
 #include <fstream>
 #include <vector>
-#include <error.h>
+
 using namespace std;
 namespace fs = std::filesystem;
-struct FileData{
-    string filename; //æ–‡ä»¶å
-    string filememo; //æ–‡ä»¶å†…å®¹
-    string filedirectory; //æ–‡ä»¶ç›®å½•
-    unsigned long int filesize; //æ–‡ä»¶å¤§å°
+struct FileData {
+    string filename; //ÎÄ¼şÃû
+    string filememo; //ÎÄ¼şÄÚÈİ
+    string filedirectory; //ÎÄ¼şÄ¿Â¼
+    unsigned long int filesize; //ÎÄ¼ş´óĞ¡
 };
-class SourceManager{
+class SourceManager {
 public:
     FileData fd;
     SourceManager(fs::path& filepath);
     void readSource(fs::path& filepath);
-    ~SourceManager(){};
-    
+    ~SourceManager() {};
+
 private:
-    fs::path m_filepath; //æ–‡ä»¶è·¯å¾„
+    fs::path m_filepath; //ÎÄ¼şÂ·¾¶
 };

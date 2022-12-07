@@ -3,7 +3,7 @@
 #include "TokenKind.h"
 #include "LogError.h"
 #include "allAST.h"
-class Parser{
+class Parser {
 public:
     Parser(vector<Token> tokenVector);
     ~Parser();
@@ -24,6 +24,7 @@ private:
     std::shared_ptr<ExprAST> ParseExpression();
     std::shared_ptr<ExprAST> ParseNumber();
     std::shared_ptr<ExprAST> ParseBinOpRHS(int ExprPrec, std::shared_ptr<ExprAST> LHS);
+    std::shared_ptr<ExprAST> ParseBegin();
     void getNextToken();
     void buildBinopPrecedence();
     int GetTokPrecedence();
