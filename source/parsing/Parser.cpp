@@ -122,7 +122,7 @@ std::shared_ptr<DefinitionAST> Parser::ParseModuleDefinition() { //Ω‚Œˆmodule µœ
 }
 
 std::shared_ptr<ExprAST> Parser::ParseBegin() {
-    cout << "->parsed a Begin" << endl;
+    cout << "->parsing a Begin" << endl;
     getNextToken();
     std::vector<shared_ptr<ExprAST>> Exprs;
     while (curTokenKind != TokenKind::EndKeyword) {
@@ -167,7 +167,6 @@ std::shared_ptr<ExprAST> Parser::ParseExpression() {
 std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<ExprAST> LHS) {
     if (curTokenKind == TokenKind::Semicolon)
         return nullptr;
-    cout << "->parsing a Binary Expression..." << endl;
     while (1) {
         int curTokenPrec = GetTokPrecedence(); //ªÒ»°µ±«∞Token‘ÀÀ„∑˚µƒ”≈œ»º∂
         if (curTokenPrec < ExprPrec)
@@ -176,6 +175,7 @@ std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<Exp
         auto RHS = parsePrimary();
         if (!RHS)
             return nullptr;
+        cout << "->parsing a Binary Expression..." << endl;
         int nextOpPrec = GetTokPrecedence(); //ªÒ»°œ¬“ª∏ˆ‘ÀÀ„∑˚µƒ”≈œ»º∂
         if (curTokenPrec < nextOpPrec) {
             RHS = ParseBinOpRHS(curTokenPrec + 1, std::move(RHS));
