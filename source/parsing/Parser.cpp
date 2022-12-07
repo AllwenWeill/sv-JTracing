@@ -47,6 +47,9 @@ std::shared_ptr<ExprAST> Parser::parsePrimary() { //½âÎö³õ¼¶±í´ïÊ½
         LE.addnote(tmpStr, curToken.TL.m_tokenLine);
         return nullptr;
     }
+    case TokenKind::IntKeyword:
+        cout << "->parsing a IntKeyWord..." << endl;
+        break;
     case TokenKind::BeginKeyword:
         auto V = ParseBegin();
         return std::move(V);
@@ -66,6 +69,7 @@ std::shared_ptr<ExprAST> Parser::parsePrimary() { //½âÎö³õ¼¶±í´ïÊ½
     case TokenKind::OpenParenthesis:
         return ParseParenExpr();
     default:
+        LE.addnote("expcted ';'", curToken.TL.m_tokenLine);
         return nullptr;
     }
 }
@@ -117,12 +121,14 @@ std::shared_ptr<DefinitionAST> Parser::ParseModuleDefinition() { //½âÎömoduleÊµÏ
         auto V = ParseExpression();
         if (V != nullptr)
             Exprs.push_back(V);
+        else
+            m_offset--;
     }
     return std::make_shared<DefinitionAST>(moduleName, Exprs);
 }
 
 std::shared_ptr<ExprAST> Parser::ParseBegin() {
-    cout << "->parsing a Begin" << endl;
+    cout << "->parsing a Begin..." << endl;
     getNextToken();
     std::vector<shared_ptr<ExprAST>> Exprs;
     while (curTokenKind != TokenKind::EndKeyword) {
@@ -161,6 +167,8 @@ std::shared_ptr<ExprAST> Parser::ParseExpression() {
     auto LHS = parsePrimary();
     if (!LHS)
         return nullptr;
+    else if (curTokenKind == TokenKind::EndKeyword)
+        return LHS;
     return ParseBinOpRHS(0, std::move(LHS));
 }
 
@@ -204,6 +212,9 @@ int Parser::GetTokPrecedence() {
     if (curStr == "=") {
         return 1;
     }
+    else if (curStr == ";") {
+        return -1;
+    }
     else if (curStr != "+" //Ôö¼Ó¶ÔcurTokenKindµÄÅÐ¶Ï£¬ÔöÇ¿º¯Êý½¡×³ÐÔ
         && curStr != "-"
         && curStr != "*"
@@ -213,8 +224,13 @@ int Parser::GetTokPrecedence() {
         && curStr != "|"
         && curStr != "<"
         && curStr != ">"
+        && (curTokenKind == TokenKind::IntegerLiteral || curTokenKind == TokenKind::Identifier)
         ) {
         LE.addnote("expcted an operator", curToken.TL.m_tokenLine);
+        return -1;
+    }
+    else {
+        LE.addnote("expcted ';'", curToken.TL.m_tokenLine);
         return -1;
     }
     char chOp = curStr.at(0);
@@ -239,7 +255,7 @@ void Parser::handlModule() {
 }
 
 void Parser::showErrorInformation() {
-    cout << "------------------------" << endl;
+    cout << "-----------ErrorInformation---------" << endl;
     for (auto errorNote : LE.errorNotes) {
         cout << errorNote;
     }

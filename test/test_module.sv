@@ -1,6 +1,6 @@
 module m;
     // hello
-    int a = 6 + 5;
+    int a = 5;
 
     begin end
 endmodule
