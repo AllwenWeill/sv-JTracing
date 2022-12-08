@@ -12,6 +12,7 @@ Parser::Parser(vector<Token> tokenVector)
 }
 
 Parser::~Parser() {
+    showParserInformation();
     showErrorInformation();
 }
 
@@ -48,7 +49,7 @@ std::shared_ptr<ExprAST> Parser::parsePrimary() { //½âÎö³õ¼¶±í´ïÊ½
         return nullptr;
     }
     case TokenKind::IntKeyword:
-        cout << "->parsing a IntKeyWord..." << endl;
+        LogP.addnote("->parsing a IntKeyWord...");
         break;
     case TokenKind::BeginKeyword:
         auto V = ParseBegin();
@@ -68,6 +69,9 @@ std::shared_ptr<ExprAST> Parser::parsePrimary() { //½âÎö³õ¼¶±í´ïÊ½
     }
     case TokenKind::OpenParenthesis:
         return ParseParenExpr();
+    case TokenKind::Semicolon:
+        LE.addnote("expected expression", curToken.TL.m_tokenLine);
+        return nullptr;
     default:
         LE.addnote("expcted ';'", curToken.TL.m_tokenLine);
         return nullptr;
@@ -128,7 +132,7 @@ std::shared_ptr<DefinitionAST> Parser::ParseModuleDefinition() { //½âÎömoduleÊµÏ
 }
 
 std::shared_ptr<ExprAST> Parser::ParseBegin() {
-    cout << "->parsing a Begin..." << endl;
+    LogP.addnote("->parsing a Begin...");
     getNextToken();
     std::vector<shared_ptr<ExprAST>> Exprs;
     while (curTokenKind != TokenKind::EndKeyword) {
@@ -172,7 +176,7 @@ std::shared_ptr<ExprAST> Parser::ParseExpression() {
     return ParseBinOpRHS(0, std::move(LHS));
 }
 
-std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<ExprAST> LHS) {
+std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<ExprAST> LHS) { //½âÎö¶şÔª±í´ïÊ½µÄÓÒ°ë²¿·Ö
     if (curTokenKind == TokenKind::Semicolon)
         return nullptr;
     while (1) {
@@ -183,7 +187,7 @@ std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<Exp
         auto RHS = parsePrimary();
         if (!RHS)
             return nullptr;
-        cout << "->parsing a Binary Expression..." << endl;
+        LogP.addnote("->parsing a Binary Expression...");
         int nextOpPrec = GetTokPrecedence(); //»ñÈ¡ÏÂÒ»¸öÔËËã·ûµÄÓÅÏÈ¼¶
         if (curTokenPrec < nextOpPrec) {
             RHS = ParseBinOpRHS(curTokenPrec + 1, std::move(RHS));
@@ -233,15 +237,17 @@ int Parser::GetTokPrecedence() {
         LE.addnote("expcted an operator", curToken.TL.m_tokenLine);
         return -1;
     }
+    else if (BinopPrecedence_umap.count(curStr.at(0))) {
+        char chOp = curStr.at(0);
+        int TokPrec = BinopPrecedence_umap[chOp];
+        if (TokPrec <= 0)
+            return -1;
+        return TokPrec;
+    }
     else {
         LE.addnote("expcted ';'", curToken.TL.m_tokenLine);
         return -1;
     }
-    char chOp = curStr.at(0);
-    int TokPrec = BinopPrecedence_umap[chOp];
-    if (TokPrec <= 0)
-        return -1;
-    return TokPrec;
 }
 
 std::shared_ptr<DefinitionAST> Parser::parseModule() {
@@ -251,7 +257,7 @@ std::shared_ptr<DefinitionAST> Parser::parseModule() {
 
 void Parser::handlModule() {
     if (parseModule()) {
-        cout << "parsed a Module!" << endl;
+        LogP.addnote("parsed a Module!");
     }
     else {
         getNextToken();
@@ -262,5 +268,12 @@ void Parser::showErrorInformation() {
     cout << "-----------ErrorInformation---------" << endl;
     for (auto errorNote : LE.errorNotes) {
         cout << errorNote;
+    }
+}
+
+void Parser::showParserInformation() {
+    cout << "-----------ParserInformation---------" << endl;
+    for (auto note : LogP.parserNotes) {
+        cout << note << endl;
     }
 }

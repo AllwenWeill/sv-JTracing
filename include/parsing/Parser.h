@@ -2,12 +2,14 @@
 #include "Token.h"
 #include "TokenKind.h"
 #include "LogError.h"
+#include "LogParser.h"
 #include "allAST.h"
 class Parser {
 public:
     Parser(vector<Token> tokenVector);
     ~Parser();
     LogError LE;
+    LogParser LogP;
     Token curToken;
     TokenKind curTokenKind;
     void mainParser();
@@ -30,4 +32,5 @@ private:
     int GetTokPrecedence();
     void handlModule();
     void showErrorInformation();
+    void showParserInformation();
 };
