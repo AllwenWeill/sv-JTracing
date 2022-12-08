@@ -190,6 +190,10 @@ std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<Exp
             if (RHS == nullptr)
                 return nullptr;
         }
+        if (nextOpPrec == -1) {
+            m_offset--;
+            return std::make_shared<BinaryExprAST>(BinOp, std::move(LHS), std::move(RHS));
+        }
         // Merge LHS/RHS.
         LHS = std::make_shared<BinaryExprAST>(BinOp, std::move(LHS), std::move(RHS));
     }
