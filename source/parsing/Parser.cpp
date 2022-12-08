@@ -1,6 +1,7 @@
 #include "Parser.h"
 Parser::Parser(vector<Token> tokenVector)
-    :m_tokenVector(tokenVector)
+    :m_tokenVector(tokenVector),
+    variableTypeFlag(TokenKind::NullKeyword)
 {
     m_offset = 0;
     buildBinopPrecedence();
@@ -50,6 +51,7 @@ std::shared_ptr<ExprAST> Parser::parsePrimary() { //解析初级表达式
     }
     case TokenKind::IntKeyword:
         LogP.addnote("->parsing a IntKeyWord...");
+        variableTypeFlag = TokenKind::IntKeyword;
         break;
     case TokenKind::BeginKeyword:
         auto V = ParseBegin();
@@ -58,7 +60,7 @@ std::shared_ptr<ExprAST> Parser::parsePrimary() { //解析初级表达式
     getNextToken();
     switch (curTokenKind) {
     case TokenKind::Identifier:
-        return ParseIdentifierExpr();
+        return ParseIdentifierExpr(variableTypeFlag);
     case TokenKind::IntegerLiteral:
         return ParseNumber();
     case TokenKind::Unknown: {
@@ -160,8 +162,37 @@ std::shared_ptr<ExprAST> Parser::ParseParenExpr() {
     return V;
 }
 
-std::shared_ptr<ExprAST> Parser::ParseIdentifierExpr() {
+std::shared_ptr<ExprAST> Parser::ParseIdentifierExpr(TokenKind varType) {
     std::string IdName = curToken.getTokenStr();
+    switch (varType) {
+    case TokenKind::IntKeyword:
+    case TokenKind::ParameterKeyword:
+    case TokenKind::StringKeyword: {
+        if (VariableInfo_umap.count(IdName)) { //如果该标识符已经存在，则说明重复定义
+            LE.addnote("previous definition here", curToken.TL.m_tokenLine);
+            return nullptr;
+        }
+        //如果为首次定义，则加入变量表
+        VariableInformation VF;
+        VF.name = IdName;
+        VF.kind = TokenKindtoString(varType);
+        VariableInfo_umap[IdName] = VF;
+        variableTypeFlag = TokenKind::NullKeyword; //将标识符flag还原
+    }
+    case TokenKind::NullKeyword: //说明非定义变量，该标识符被调用
+        if (!VariableInfo_umap.count(IdName)) { //如果该标识符不存在，则说明调用未定义标识符
+            string tmpStr = "use of undeclared identifier '";
+            tmpStr += IdName;
+            tmpStr += "'";
+            LE.addnote(tmpStr, curToken.TL.m_tokenLine);
+            return nullptr;
+        }
+        break;
+    default: //不符合定义类型的关键字
+        LE.addnote("invaild type", curToken.TL.m_tokenLine);
+        return nullptr;
+        break;
+    }
     getNextToken();
     auto V = std::make_shared<VariableExprAST>(IdName); //需要判断后面是否为;号?
     return std::move(V);
@@ -275,5 +306,13 @@ void Parser::showParserInformation() {
     cout << "-----------ParserInformation---------" << endl;
     for (auto note : LogP.parserNotes) {
         cout << note << endl;
+    }
+}
+
+void Parser::showVariableInformation() {
+    cout << "-----------VariableInformation---------" << endl;
+    cout << "Name--------Tpye-------Content" << endl;
+    for (auto varInfo : VariableInfo_umap) {
+        cout << varInfo.second.name << "->" << varInfo.second.kind << "->" << varInfo.second.content << endl;
     }
 }
