@@ -15,6 +15,7 @@ Parser::Parser(vector<Token> tokenVector)
 Parser::~Parser() {
     showParserInformation();
     showErrorInformation();
+    showVariableInformation();
 }
 
 void Parser::mainParser() {
@@ -172,12 +173,12 @@ std::shared_ptr<ExprAST> Parser::ParseIdentifierExpr(TokenKind varType) {
             LE.addnote("previous definition here", curToken.TL.m_tokenLine);
             return nullptr;
         }
-        //如果为首次定义，则加入变量表
-        VariableInformation VF;
+        //如果为首次定义，则刷新VF结构体内的变量信息，并加入变量表
         VF.name = IdName;
         VF.kind = TokenKindtoString(varType);
         VariableInfo_umap[IdName] = VF;
         variableTypeFlag = TokenKind::NullKeyword; //将标识符flag还原
+        break;
     }
     case TokenKind::NullKeyword: //说明非定义变量，该标识符被调用
         if (!VariableInfo_umap.count(IdName)) { //如果该标识符不存在，则说明调用未定义标识符
@@ -226,7 +227,7 @@ std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<Exp
                 return nullptr;
         }
         if (nextOpPrec == -1) {
-            m_offset--;
+            //m_offset--;
             return std::make_shared<BinaryExprAST>(BinOp, std::move(LHS), std::move(RHS));
         }
         // Merge LHS/RHS.

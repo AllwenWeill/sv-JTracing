@@ -19,6 +19,7 @@ public:
     TokenKind curTokenKind;
     unordered_map<string, VariableInformation> VariableInfo_umap; //变量存储表
 private:
+    VariableInformation VF; //该VF结构体需要不断被更新，生存周期直到Parser销毁
     unsigned long int m_offset;
     TokenKind variableTypeFlag;
     unordered_map<char, int> BinopPrecedence_umap;
