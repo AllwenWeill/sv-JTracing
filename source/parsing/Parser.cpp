@@ -203,7 +203,7 @@ std::shared_ptr<ExprAST> Parser::ParseExpression() {
     auto LHS = parsePrimary();
     if (!LHS)
         return nullptr;
-    else if (curTokenKind == TokenKind::EndKeyword)
+    else if (curTokenKind == TokenKind::EndKeyword || curTokenKind == TokenKind::Semicolon)
         return LHS;
     return ParseBinOpRHS(0, std::move(LHS));
 }
