@@ -1,6 +1,5 @@
 module m;
     // hello
-    bit [4:0] b;
-    int b;
+    string s = "hello world";
     begin end
 endmodule

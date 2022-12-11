@@ -34,6 +34,7 @@ private:
     std::shared_ptr<ExprAST> ParseNumber();
     std::shared_ptr<ExprAST> ParseBinOpRHS(int ExprPrec, std::shared_ptr<ExprAST> LHS);
     std::shared_ptr<ExprAST> ParseBegin();
+    std::shared_ptr<ExprAST> ParseBitWide();
     void mainParser();
     void getNextToken();
     void buildBinopPrecedence();

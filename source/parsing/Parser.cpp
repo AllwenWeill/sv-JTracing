@@ -92,6 +92,8 @@ std::shared_ptr<ExprAST> Parser::parsePrimary() { //解析初级表达式
         return ParseIdentifierExpr(variableTypeFlag);
     case TokenKind::IntegerLiteral:
         return ParseNumber();
+    case TokenKind::OpenBracket:
+        return ParseBitWide();
     case TokenKind::Unknown: {
         string tmpStr = "Unknown the ";
         tmpStr += curToken.getTokenStr();
@@ -107,6 +109,33 @@ std::shared_ptr<ExprAST> Parser::parsePrimary() { //解析初级表达式
         LE.addnote("expcted ';'", curToken.TL.m_tokenLine);
         return nullptr;
     }
+}
+
+std::shared_ptr<ExprAST> Parser::ParseBitWide() {
+    getNextToken();
+    if (curTokenKind != TokenKind::IntegerLiteral) { //[]内第一个Token期待的是数字类型的常数
+        LE.addnote("reference to non-constant variable is not allowed in a constant expression", curToken.TL.m_tokenLine);
+        return nullptr;
+    }
+    auto numWide = ParseNumber(); 
+    if (curTokenKind != TokenKind::Colon) { //此时期待一个:
+        LE.addnote("packed dimensions require a full range specification", curToken.TL.m_tokenLine);
+        return nullptr;
+    }
+    getNextToken();
+    if (curTokenKind != TokenKind::IntegerLiteral) { //[]内最后一个Token期待的是数字类型的常数
+        LE.addnote("reference to non-constant variable is not allowed in a constant expression", curToken.TL.m_tokenLine);
+        return nullptr;
+    }
+    auto numRange = ParseNumber();
+    if (curTokenKind != TokenKind::CloseBracket) { //此时期待一个]
+        LE.addnote("expected ']'", curToken.TL.m_tokenLine);
+        return nullptr;
+    }
+    getNextToken();
+    auto BitWideName = ParseIdentifierExpr(TokenKind::BitKeyword);
+    auto res = std::make_shared<BitWideAST>(numWide, numRange, BitWideName);
+    return std::move(res);
 }
 
 std::shared_ptr<ExprAST> Parser::ParseNumber() {

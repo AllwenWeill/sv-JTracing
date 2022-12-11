@@ -181,6 +181,10 @@ void Lexer::scanText(){
                     tokenVector.push_back(create(TokenKind::Semicolon, lineNum, keywords.size()-1, ";"));
                     advance();
                 }
+                else if (tempCh == ':') {
+                    tokenVector.push_back(create(TokenKind::Colon, lineNum, keywords.size() - 1, ":"));
+                    advance();
+                }
                 else if(tempCh == '('){ //如果括号与文本中无空格相连，则无法检测到
                     tokenVector.push_back(create(TokenKind::OpenParenthesis, lineNum, keywords.size()-1, "("));
                     advance();

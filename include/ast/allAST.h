@@ -5,3 +5,4 @@
 #include "TokenKind.h"
 #include "BinaryExprAST.h"
 #include "BeginAST.h"
+#include "BitWideAST.h"
