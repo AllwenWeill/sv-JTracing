@@ -51,8 +51,36 @@ std::shared_ptr<ExprAST> Parser::parsePrimary() { //解析初级表达式
         return nullptr;
     }
     case TokenKind::IntKeyword:
-        LogP.addnote("->parsing a IntKeyWord...");
+        LogP.addnote("->parsing a IntVariable...");
         variableTypeFlag = TokenKind::IntKeyword;
+        break;
+    case TokenKind::RegKeyword:
+        LogP.addnote("->parsing a RegVariable...");
+        variableTypeFlag = TokenKind::RegKeyword;
+        break;
+    case TokenKind::BitKeyword:
+        LogP.addnote("->parsing a BitVariable...");
+        variableTypeFlag = TokenKind::BitKeyword;
+        break;
+    case TokenKind::ByteKeyword:
+        LogP.addnote("->parsing a ByteVariable...");
+        variableTypeFlag = TokenKind::ByteKeyword;
+        break;
+    case TokenKind::ShortIntKeyword:
+        LogP.addnote("->parsing a ShortIntVariable...");
+        variableTypeFlag = TokenKind::ShortIntKeyword;
+        break;
+    case TokenKind::LongIntKeyword:
+        LogP.addnote("->parsing a LongIntVariable...");
+        variableTypeFlag = TokenKind::LongIntKeyword;
+        break;
+    case TokenKind::IntegerKeyword:
+        LogP.addnote("->parsing a IntegerVariable...");
+        variableTypeFlag = TokenKind::IntegerKeyword;
+        break;
+    case TokenKind::LogicKeyword:
+        LogP.addnote("->parsing a LogicVariable...");
+        variableTypeFlag = TokenKind::LogicKeyword;
         break;
     case TokenKind::BeginKeyword:
         auto V = ParseBegin();
@@ -167,8 +195,13 @@ std::shared_ptr<ExprAST> Parser::ParseIdentifierExpr(TokenKind varType) {
     std::string IdName = curToken.getTokenStr();
     switch (varType) {
     case TokenKind::IntKeyword:
-    case TokenKind::ParameterKeyword:
-    case TokenKind::StringKeyword: {
+    case TokenKind::ShortIntKeyword:
+    case TokenKind::LongIntKeyword:
+    case TokenKind::LogicKeyword:
+    case TokenKind::BitKeyword:
+    case TokenKind::ByteKeyword:
+    case TokenKind::IntegerKeyword:
+    case TokenKind::RegKeyword: {
         if (VariableInfo_umap.count(IdName)) { //如果该标识符已经存在，则说明重复定义
             LE.addnote("previous definition here", curToken.TL.m_tokenLine);
             return nullptr;
