@@ -189,6 +189,22 @@ void Lexer::scanText(){
                     tokenVector.push_back(create(TokenKind::CloseParenthesis, lineNum, keywords.size()-1, ")"));
                     advance();
                 }
+                else if (tempCh == '[') {
+                    tokenVector.push_back(create(TokenKind::OpenBracket, lineNum, keywords.size() - 1, "["));
+                    advance();
+                }
+                else if (tempCh == ']') {
+                    tokenVector.push_back(create(TokenKind::CloseBracket, lineNum, keywords.size() - 1, "]"));
+                    advance();
+                }
+                else if (tempCh == '{') {
+                    tokenVector.push_back(create(TokenKind::OpenBrace, lineNum, keywords.size() - 1, "{"));
+                    advance();
+                }
+                else if (tempCh == '}') {
+                    tokenVector.push_back(create(TokenKind::CloseBrace, lineNum, keywords.size() - 1, "}"));
+                    advance();
+                }
                 else{
                     advance();
                 }
