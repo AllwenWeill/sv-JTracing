@@ -1,6 +1,5 @@
 module m;
     // hello
-    bit [4:0] b;
-    int b;
+    always_ff
     begin end
 endmodule

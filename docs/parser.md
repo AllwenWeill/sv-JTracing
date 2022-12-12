@@ -22,4 +22,15 @@ byte	8位2态变量；等效于var bit [ 7 : 0 ]
 shortint	16位2态变量；等效于var bit [ 15: 0 ]
 longint	64位2态变量；等效于var bit [ 63: 0 ]
 
-2.
+2. always_ff：用于描述触发器，进行非阻塞赋值。 always_comb：描述的是电路行为，用阻塞赋值。
+
+已完成解析语法：
+1.变量：reg、logic、integer、bit、int、byte、shortint、longint（含变量重定义检查）
+2.module endmodule
+3.二元表达式
+4.数字
+5.位宽，例如[4:0]
+6.begin end
+7.表达式
+8.()
+9.标识符
