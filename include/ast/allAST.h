@@ -6,3 +6,8 @@
 #include "BinaryExprAST.h"
 #include "BeginAST.h"
 #include "BitWideAST.h"
+#include "Always_ffAST.h"
+#include "Always_combAST.h"
+#include "IfAST.h"
+#include "ElseAST.h"
+#include "CmpExprAST.h"

@@ -30,6 +30,12 @@ void Parser::mainParser() {
         case TokenKind::Semicolon:
             getNextToken();
             break;
+        case TokenKind::AlwaysFFKeyword:
+            handlAlways_ff();
+            break;
+        case TokenKind::AlwaysCombKeyword:
+            handlAlways_comb();
+            break;
         default:
             ParseExpression();
             break;
@@ -82,9 +88,34 @@ std::shared_ptr<ExprAST> Parser::parsePrimary() { //½âÎö³õ¼¶±í´ïÊ½
         LogP.addnote("->parsing a LogicVariable...");
         variableTypeFlag = TokenKind::LogicKeyword;
         break;
-    case TokenKind::BeginKeyword:
+    case TokenKind::PosEdgeKeyword:
+        LogP.addnote("->parsing a PosEdgeVariable...");
+        variableTypeFlag = TokenKind::PosEdgeKeyword;
+        break;
+    case TokenKind::BeginKeyword: {
         auto V = ParseBegin();
         return std::move(V);
+    }
+    case TokenKind::IfKeyword:
+    {
+        auto V = ParseIf();
+        return std::move(V);
+    }
+    case TokenKind::ElseKeyword:
+    {
+        auto V = ParseElse();
+        return std::move(V);
+    }
+    case TokenKind::AlwaysFFKeyword: {
+        auto V = ParseAlways_ff();
+        return std::move(V);
+    }   
+    case TokenKind::AlwaysCombKeyword: {
+        auto V = ParseAlways_comb();
+        return std::move(V);
+    }
+    case TokenKind::Identifier:
+        return ParseIdentifierExpr(TokenKind::NullKeyword);
     }
     getNextToken();
     switch (curTokenKind) {
@@ -191,9 +222,35 @@ std::shared_ptr<DefinitionAST> Parser::ParseModuleDefinition() { //½âÎömoduleÊµÏ
     return std::make_shared<DefinitionAST>(moduleName, Exprs);
 }
 
+std::shared_ptr<Always_ffAST> Parser::ParseAlways_ff() {
+    getNextToken(); //eat Always_ff¹Ø¼ü×Ö
+    if (curTokenKind != TokenKind::At) {
+        LE.addnote("always_ff procedure must have one and only one event control", curToken.TL.m_tokenLine);
+        return nullptr;
+    }
+    getNextToken(); //eat @
+    if (curTokenKind != TokenKind::OpenParenthesis) {
+        LE.addnote("always_ff procedure must have one and only one event control", curToken.TL.m_tokenLine);
+        return nullptr;
+    }
+    auto ff_event = ParseParenExpr();
+    if (ff_event == nullptr) {
+        LE.addnote("expected statement", curToken.TL.m_tokenLine);
+        return nullptr;
+    }
+    auto exprs = parsePrimary();
+    return std::make_shared<Always_ffAST>(ff_event, exprs);
+}
+
+std::shared_ptr<Always_combAST> Parser::ParseAlways_comb() {
+    getNextToken(); //eat Always_comb¹Ø¼ü×Ö
+    auto exprs = parsePrimary();
+    return std::make_shared<Always_combAST>(exprs);
+}
+
 std::shared_ptr<ExprAST> Parser::ParseBegin() {
     LogP.addnote("->parsing a Begin...");
-    getNextToken();
+    getNextToken(); //eat Begin
     std::vector<shared_ptr<ExprAST>> Exprs;
     while (curTokenKind != TokenKind::EndKeyword) {
         if (m_offset == m_tokenVector.size() - 1 && curTokenKind != TokenKind::EndKeyword) {
@@ -203,21 +260,98 @@ std::shared_ptr<ExprAST> Parser::ParseBegin() {
         auto V = ParseExpression();
         if (V != nullptr)
             Exprs.push_back(V);
+        getNextToken();
     }
     return std::move(std::make_shared<BeginAST>(Exprs));
 }
 
+std::shared_ptr<ExprAST> Parser::ParseIf() {
+    LogP.addnote("->parsing a if...");
+    getNextToken(); //eat If
+    if (curTokenKind != TokenKind::OpenParenthesis) {
+        LE.addnote("expected expression", curToken.TL.m_tokenLine);
+        return nullptr;
+    }
+    auto cond = ParseParenExpr();
+    auto expr = ParseExpression();
+    return std::move(std::make_shared<IfAST>(cond, expr));
+}
+
+std::shared_ptr<ExprAST> Parser::ParseElse() {
+    LogP.addnote("->parsing else...");
+    getNextToken(); //eat else
+    auto expr = ParseExpression();
+    return std::move(std::make_shared<ElseAST>(expr));
+}
+
 std::shared_ptr<ExprAST> Parser::ParseParenExpr() {
     getNextToken(); // eat (.
-    auto V = ParseExpression();
-    if (!V)
-        return nullptr;
+    shared_ptr<ExprAST> V = nullptr;
+    switch (curTokenKind) {
+    case TokenKind::Identifier: {
+        if (!VariableInfo_umap.count(curToken.getTokenStr())) { //Èç¹û¸Ã±êÊ¶·û²»´æÔÚ£¬ÔòËµÃ÷µ÷ÓÃÎ´¶¨Òå±êÊ¶·û
+            string tmpStr = "use of undeclared identifier '";
+            tmpStr += curToken.getTokenStr();
+            tmpStr += "'";
+            LE.addnote(tmpStr, curToken.TL.m_tokenLine);
+            return nullptr;
+        }
+        auto LHS = ParseIdentifierExpr(TokenKind::NullKeyword);
+        if (curTokenKind != TokenKind::CloseParenthesis) { //Èç¹û²»Îª)ÔòËµÃ÷ºóÃæÈÔÐèÅÐ¶Ï
+            V = ParseCmpOpRHS(LHS);
+        }
+        break;
+    }
+    case TokenKind::IntegerLiteral:
+        V = ParseNumber();
+        break;
+    default:
+        V = parsePrimary();
+        break;
+    }
     if (curToken.getTokenKind() != TokenKind::CloseParenthesis) {
         LE.addnote("expected ')'", curToken.TL.m_tokenLine);
         return nullptr;
     }
     getNextToken(); // eat ).
     return V;
+}
+
+std::shared_ptr<ExprAST> Parser::ParseCmpOpRHS(std::shared_ptr<ExprAST> LHS) {
+    string op;
+    switch (curTokenKind) {
+    case TokenKind::DoubleEquals:
+    case TokenKind::LessThanEquals:
+    case TokenKind::GreaterThanEquals:
+    case TokenKind::GreaterThan:
+    case TokenKind::LessThan:
+        op = curToken.getTokenKindStr();
+    default:
+        LE.addnote("expected a compare operator", curToken.TL.m_tokenLine);
+        return nullptr;
+    }
+    getNextToken(); //eat op
+    shared_ptr<ExprAST> RHS = nullptr;
+    switch (curTokenKind) {
+    case TokenKind::Identifier: {
+        if (!VariableInfo_umap.count(curToken.getTokenStr())) { //Èç¹û¸Ã±êÊ¶·û²»´æÔÚ£¬ÔòËµÃ÷µ÷ÓÃÎ´¶¨Òå±êÊ¶·û
+            string tmpStr = "use of undeclared identifier '";
+            tmpStr += curToken.getTokenStr();
+            tmpStr += "'";
+            LE.addnote(tmpStr, curToken.TL.m_tokenLine);
+            return nullptr;
+        }
+        RHS = ParseIdentifierExpr(TokenKind::NullKeyword);
+        break;
+    }
+    case TokenKind::IntegerLiteral:
+        RHS = ParseNumber();
+        break;
+    default:
+        LE.addnote("expected expression", curToken.TL.m_tokenLine);
+        break;
+    }
+    return make_shared<CmpExprAST>(op, LHS, RHS);
 }
 
 std::shared_ptr<ExprAST> Parser::ParseIdentifierExpr(TokenKind varType) {
@@ -230,7 +364,8 @@ std::shared_ptr<ExprAST> Parser::ParseIdentifierExpr(TokenKind varType) {
     case TokenKind::BitKeyword:
     case TokenKind::ByteKeyword:
     case TokenKind::IntegerKeyword:
-    case TokenKind::RegKeyword: {
+    case TokenKind::RegKeyword:
+    case TokenKind::PosEdgeKeyword:{
         if (VariableInfo_umap.count(IdName)) { //Èç¹û¸Ã±êÊ¶·ûÒÑ¾­´æÔÚ£¬ÔòËµÃ÷ÖØ¸´¶¨Òå
             LE.addnote("previous definition here", curToken.TL.m_tokenLine);
             return nullptr;
@@ -257,7 +392,7 @@ std::shared_ptr<ExprAST> Parser::ParseIdentifierExpr(TokenKind varType) {
         break;
     }
     getNextToken();
-    auto V = std::make_shared<VariableExprAST>(IdName); //ÐèÒªÅÐ¶ÏºóÃæÊÇ·ñÎª;ºÅ?
+    auto V = std::make_shared<VariableExprAST>(IdName, VF.kind); //ÐèÒªÅÐ¶ÏºóÃæÊÇ·ñÎª;ºÅ?
     return std::move(V);
 }
 
@@ -265,7 +400,7 @@ std::shared_ptr<ExprAST> Parser::ParseExpression() {
     auto LHS = parsePrimary();
     if (!LHS)
         return nullptr;
-    else if (curTokenKind == TokenKind::EndKeyword || curTokenKind == TokenKind::Semicolon)
+    else if (curTokenKind == TokenKind::EndKeyword || curTokenKind == TokenKind::Semicolon || curTokenKind == TokenKind::CloseParenthesis)
         return LHS;
     return ParseBinOpRHS(0, std::move(LHS));
 }
@@ -358,22 +493,42 @@ void Parser::handlModule() {
     }
 }
 
+void Parser::handlAlways_ff() {
+    getNextToken();
+    if (ParseAlways_ff()) {
+        LogP.addnote("parsed Always_ff!");
+    }
+    else {
+        getNextToken();
+    }
+}
+
+void Parser::handlAlways_comb() {
+    getNextToken();
+    if (ParseAlways_comb()) {
+        LogP.addnote("parsed Always_comb!");
+    }
+    else {
+        getNextToken();
+    }
+}
+
 void Parser::showErrorInformation() {
-    cout << "-----------ErrorInformation---------" << endl;
+    cout << "-----------<ErrorInformation>---------" << endl;
     for (auto errorNote : LE.errorNotes) {
         cout << errorNote;
     }
 }
 
 void Parser::showParserInformation() {
-    cout << "-----------ParserInformation---------" << endl;
+    cout << "-----------<ParserInformation>---------" << endl;
     for (auto note : LogP.parserNotes) {
         cout << note << endl;
     }
 }
 
 void Parser::showVariableInformation() {
-    cout << "-----------VariableInformation---------" << endl;
+    cout << "-----------<VariableInformation>---------" << endl;
     cout << "Name--------Tpye-------Content" << endl;
     for (auto varInfo : VariableInfo_umap) {
         cout << varInfo.second.name << "->" << varInfo.second.kind << "->" << varInfo.second.content << endl;

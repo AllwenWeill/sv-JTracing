@@ -1,5 +1,10 @@
 待完善事件：
 1. 解析位宽范围，例如：bit [3:0] a;(已完成)
+2. 解析always_ff always_comb(已完成)
+3. 解析if else（已完成）
+4. VariableAST没有加入变量类型（已完成）
+5. 解析（）圆括号内的表达式应不同于普通的表达式，需要重写（已完成）
+6. 添加解析比较RHS函数及类(已完成)
 
 问题：
 1. 构建的变量类型表无法记录该变量的值?（或许在语法解析阶段不需要记录变量内容，仅需要记录变量是否出现过即可？）
@@ -22,7 +27,7 @@ byte	8位2态变量；等效于var bit [ 7 : 0 ]
 shortint	16位2态变量；等效于var bit [ 15: 0 ]
 longint	64位2态变量；等效于var bit [ 63: 0 ]
 
-2. always_ff：用于描述触发器，进行非阻塞赋值。 always_comb：描述的是电路行为，用阻塞赋值。
+2. always_ff：用于描述触发器，进行非阻塞赋值。 always_comb：描述的是电路（组合逻辑电路）行为，用阻塞赋值。
 
 已完成解析语法：
 1.变量：reg、logic、integer、bit、int、byte、shortint、longint（含变量重定义检查）
@@ -34,3 +39,7 @@ longint	64位2态变量；等效于var bit [ 63: 0 ]
 7.表达式
 8.()
 9.标识符
+10.二元比较表达式
+11.if-else
+12.always_ff
+13.always_comb

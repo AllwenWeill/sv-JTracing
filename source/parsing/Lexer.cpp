@@ -213,6 +213,10 @@ void Lexer::scanText(){
                     tokenVector.push_back(create(TokenKind::Dollar, lineNum, keywords.size() - 1, "$"));
                     advance();
                 }
+                else if (tempCh == '@') {
+                    tokenVector.push_back(create(TokenKind::At, lineNum, keywords.size() - 1, "@"));
+                    advance();
+                }
                 else{
                     advance();
                 }
