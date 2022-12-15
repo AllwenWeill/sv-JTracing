@@ -472,6 +472,15 @@ void Parser::buildBinopPrecedence() {
 
 void Parser::buildTypeUset() {
     Type_uset.insert(TokenKind::IntKeyword);
+    Type_uset.insert(TokenKind::RegKeyword);
+    Type_uset.insert(TokenKind::WireKeyword);
+    Type_uset.insert(TokenKind::ShortIntKeyword);
+    Type_uset.insert(TokenKind::LongIntKeyword);
+    Type_uset.insert(TokenKind::BitKeyword);
+    Type_uset.insert(TokenKind::ByteKeyword);
+    Type_uset.insert(TokenKind::IntegerKeyword);
+    Type_uset.insert(TokenKind::LogicKeyword);
+    Type_uset.insert(TokenKind::PosEdgeKeyword);
 }
 
 int Parser::GetTokPrecedence() {
