@@ -4,6 +4,7 @@ Parser::Parser(vector<Token> tokenVector)
     variableTypeFlag(TokenKind::NullKeyword)
 {
     m_offset = 0;
+    buildTypeUset();
     buildBinopPrecedence();
     if (m_tokenVector.size() != 0) {
         curToken = m_tokenVector[0];
@@ -20,7 +21,7 @@ Parser::~Parser() {
 
 void Parser::mainParser() {
     while(m_offset < m_tokenVector.size() - 1) {
-        cout << "ready> "<<endl;
+        //cout << "ready> "<<endl;
         switch (curTokenKind) {
         case TokenKind::ModuleKeyword:
             handlModule();
@@ -40,6 +41,8 @@ void Parser::mainParser() {
             handInitial();
             break;
         default:
+            if(Type_uset.count(curTokenKind)) //如果在Type表中，则说明当前token为int等类型关键字，则跳过
+                getNextToken();
             ParseExpression();
             break;
         }
@@ -119,6 +122,12 @@ std::shared_ptr<ExprAST> Parser::parsePrimary() { //解析初级表达式
     }
     case TokenKind::Identifier:
         return ParseIdentifierExpr(TokenKind::NullKeyword);
+    case TokenKind::DoublePlus:
+    case TokenKind::DoubleMinus: {
+        auto V = std::make_shared<NumberExprAST>(1);
+        getNextToken();//eat op
+        return std::move(V);
+    }
     }
     getNextToken();
     switch (curTokenKind) {
@@ -448,6 +457,8 @@ std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<Exp
 }
 
 void Parser::buildBinopPrecedence() {
+    BinopPrecedence_umap["++"] = 5;
+    BinopPrecedence_umap["--"] = 5;
     BinopPrecedence_umap["<"] = 10;
     BinopPrecedence_umap[">"] = 10;
     BinopPrecedence_umap["+"] = 20;
@@ -457,6 +468,10 @@ void Parser::buildBinopPrecedence() {
     BinopPrecedence_umap["%"] = 40;
     BinopPrecedence_umap["&"] = 40;
     BinopPrecedence_umap["|"] = 40;
+}
+
+void Parser::buildTypeUset() {
+    Type_uset.insert(TokenKind::IntKeyword);
 }
 
 int Parser::GetTokPrecedence() {
@@ -476,6 +491,8 @@ int Parser::GetTokPrecedence() {
         && curStr != "|"
         && curStr != "<"
         && curStr != ">"
+        && curStr != "++"
+        && curStr != "--"
         && (curTokenKind == TokenKind::IntegerLiteral || curTokenKind == TokenKind::Identifier)
         ) {
         LE.addnote("expcted an operator", curToken.TL.m_tokenLine);

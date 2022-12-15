@@ -18,6 +18,7 @@ public:
     Token curToken;
     TokenKind curTokenKind;
     unordered_map<string, VariableInformation> VariableInfo_umap; //变量存储表
+    unordered_set<TokenKind> Type_uset; //变量类型表
 private:
     VariableInformation VF; //该VF结构体需要不断被更新，生存周期直到Parser销毁
     unsigned long int m_offset;
@@ -44,6 +45,7 @@ private:
     void mainParser();
     void getNextToken();
     void buildBinopPrecedence();
+    void buildTypeUset();
     int GetTokPrecedence();
     void handlModule();
     void handlAlways_ff();
