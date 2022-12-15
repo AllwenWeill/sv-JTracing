@@ -448,15 +448,15 @@ std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<Exp
 }
 
 void Parser::buildBinopPrecedence() {
-    BinopPrecedence_umap['<'] = 10;
-    BinopPrecedence_umap['>'] = 10;
-    BinopPrecedence_umap['+'] = 20;
-    BinopPrecedence_umap['-'] = 20;
-    BinopPrecedence_umap['*'] = 40;
-    BinopPrecedence_umap['/'] = 40;
-    BinopPrecedence_umap['%'] = 40;
-    BinopPrecedence_umap['&'] = 40;
-    BinopPrecedence_umap['|'] = 40;
+    BinopPrecedence_umap["<"] = 10;
+    BinopPrecedence_umap[">"] = 10;
+    BinopPrecedence_umap["+"] = 20;
+    BinopPrecedence_umap["-"] = 20;
+    BinopPrecedence_umap["*"] = 40;
+    BinopPrecedence_umap["/"] = 40;
+    BinopPrecedence_umap["%"] = 40;
+    BinopPrecedence_umap["&"] = 40;
+    BinopPrecedence_umap["|"] = 40;
 }
 
 int Parser::GetTokPrecedence() {
@@ -481,9 +481,9 @@ int Parser::GetTokPrecedence() {
         LE.addnote("expcted an operator", curToken.TL.m_tokenLine);
         return -1;
     }
-    else if (BinopPrecedence_umap.count(curStr.at(0))) {
-        char chOp = curStr.at(0);
-        int TokPrec = BinopPrecedence_umap[chOp];
+    else if (BinopPrecedence_umap.count(curStr)) {
+        //char chOp = curStr.at(0);
+        int TokPrec = BinopPrecedence_umap[curStr];
         if (TokPrec <= 0)
             return -1;
         return TokPrec;

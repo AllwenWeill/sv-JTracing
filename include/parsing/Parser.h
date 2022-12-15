@@ -22,7 +22,7 @@ private:
     VariableInformation VF; //该VF结构体需要不断被更新，生存周期直到Parser销毁
     unsigned long int m_offset;
     TokenKind variableTypeFlag;
-    unordered_map<char, int> BinopPrecedence_umap;
+    unordered_map<string, int> BinopPrecedence_umap;
     vector<Token> m_tokenVector;
     std::shared_ptr<ExprAST> parsePrimary();
     std::shared_ptr<DefinitionAST> parseModule();
