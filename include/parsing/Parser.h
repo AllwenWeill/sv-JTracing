@@ -40,6 +40,7 @@ private:
     std::shared_ptr<ExprAST> ParseBitWide();
     std::shared_ptr<Always_ffAST> ParseAlways_ff();
     std::shared_ptr<Always_combAST> ParseAlways_comb();
+    std::shared_ptr<InitialAST> ParseInitial();
     void mainParser();
     void getNextToken();
     void buildBinopPrecedence();
@@ -47,6 +48,7 @@ private:
     void handlModule();
     void handlAlways_ff();
     void handlAlways_comb();
+    void handInitial();
     void showErrorInformation();
     void showParserInformation();
     void showVariableInformation();

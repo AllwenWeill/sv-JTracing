@@ -36,6 +36,9 @@ void Parser::mainParser() {
         case TokenKind::AlwaysCombKeyword:
             handlAlways_comb();
             break;
+        case TokenKind::InitialKeyword:
+            handInitial();
+            break;
         default:
             ParseExpression();
             break;
@@ -246,6 +249,18 @@ std::shared_ptr<Always_combAST> Parser::ParseAlways_comb() {
     getNextToken(); //eat Always_comb关键字
     auto exprs = parsePrimary();
     return std::make_shared<Always_combAST>(exprs);
+}
+
+std::shared_ptr<InitialAST> Parser::ParseInitial() {
+    getNextToken(); //eat Initial关键字
+    shared_ptr<ExprAST> expr = nullptr;
+    if (curTokenKind != TokenKind::BeginKeyword) { //则说明仅有单行表达式
+        expr = parsePrimary();
+    }
+    else { //则说明有多行表达式
+        expr = ParseBegin();
+    }
+    return make_shared<InitialAST>(expr);
 }
 
 std::shared_ptr<ExprAST> Parser::ParseBegin() {
@@ -507,6 +522,16 @@ void Parser::handlAlways_comb() {
     getNextToken();
     if (ParseAlways_comb()) {
         LogP.addnote("parsed Always_comb!");
+    }
+    else {
+        getNextToken();
+    }
+}
+
+void Parser::handInitial() {
+    getNextToken();
+    if (ParseInitial()) {
+        LogP.addnote("parsed Initial!");
     }
     else {
         getNextToken();
