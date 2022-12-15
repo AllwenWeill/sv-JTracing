@@ -72,14 +72,30 @@ void Lexer::scanText(){
                         tempStr.push_back(tempCh);
                         keywords.push_back(tempStr);
                         tempStr.clear(); //以上三行很冗余，即先将char转string再压入容器
-                        case '+':
-                            tokenVector.push_back(create(TokenKind::Plus, lineNum, keywords.size()-1, "+"));
+                    case '+': {
+                        char nextCh = (*m_psm).at(offset_count + 1);
+                        if (nextCh == '+') {
+                            tokenVector.push_back(create(TokenKind::DoublePlus, lineNum, keywords.size() - 1, "++"));
                             advance();
-                            break;
-                        case '-':
-                            tokenVector.push_back(create(TokenKind::Minus, lineNum, keywords.size()-1, "-"));
+                        }
+                        else {
+                            tokenVector.push_back(create(TokenKind::Plus, lineNum, keywords.size() - 1, "+"));
+                        }
+                        advance();
+                        break;
+                    }
+                    case '-': {
+                        char nextCh = (*m_psm).at(offset_count + 1);
+                        if (nextCh == '-') {
+                            tokenVector.push_back(create(TokenKind::DoubleMinus, lineNum, keywords.size() - 1, "--"));
                             advance();
-                            break;
+                        }
+                        else {
+                            tokenVector.push_back(create(TokenKind::Minus, lineNum, keywords.size() - 1, "-"));
+                        }
+                        advance();
+                        break; 
+                    }
                         case '*':
                             tokenVector.push_back(create(TokenKind::Star, lineNum, keywords.size()-1, "*"));
                             advance();
