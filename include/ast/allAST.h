@@ -11,3 +11,4 @@
 #include "IfAST.h"
 #include "ElseAST.h"
 #include "CmpExprAST.h"
+#include "InitialAST.h"

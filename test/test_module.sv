@@ -1,6 +1,6 @@
-always_ff @(posedge clk) //flip-flop´¥·¢Æ÷
-begin 
-	int a = 0;
-	if (a) a = 1;
-	else a = 2;
-end
+int a = 0;
+a++;
+//int a = 0;
+//for (int i = 0; i <= 5; i++) begin
+//	a = a + 1;
+//end

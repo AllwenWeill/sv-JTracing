@@ -4,6 +4,7 @@ Parser::Parser(vector<Token> tokenVector)
     variableTypeFlag(TokenKind::NullKeyword)
 {
     m_offset = 0;
+    buildTypeUset();
     buildBinopPrecedence();
     if (m_tokenVector.size() != 0) {
         curToken = m_tokenVector[0];
@@ -20,7 +21,7 @@ Parser::~Parser() {
 
 void Parser::mainParser() {
     while(m_offset < m_tokenVector.size() - 1) {
-        cout << "ready> "<<endl;
+        //cout << "ready> "<<endl;
         switch (curTokenKind) {
         case TokenKind::ModuleKeyword:
             handlModule();
@@ -36,7 +37,12 @@ void Parser::mainParser() {
         case TokenKind::AlwaysCombKeyword:
             handlAlways_comb();
             break;
+        case TokenKind::InitialKeyword:
+            handInitial();
+            break;
         default:
+            if(Type_uset.count(curTokenKind)) //如果在Type表中，则说明当前token为int等类型关键字，则跳过
+                getNextToken();
             ParseExpression();
             break;
         }
@@ -116,6 +122,12 @@ std::shared_ptr<ExprAST> Parser::parsePrimary() { //解析初级表达式
     }
     case TokenKind::Identifier:
         return ParseIdentifierExpr(TokenKind::NullKeyword);
+    case TokenKind::DoublePlus:
+    case TokenKind::DoubleMinus: {
+        auto V = std::make_shared<NumberExprAST>(1);
+        getNextToken();//eat op
+        return std::move(V);
+    }
     }
     getNextToken();
     switch (curTokenKind) {
@@ -246,6 +258,18 @@ std::shared_ptr<Always_combAST> Parser::ParseAlways_comb() {
     getNextToken(); //eat Always_comb关键字
     auto exprs = parsePrimary();
     return std::make_shared<Always_combAST>(exprs);
+}
+
+std::shared_ptr<InitialAST> Parser::ParseInitial() {
+    getNextToken(); //eat Initial关键字
+    shared_ptr<ExprAST> expr = nullptr;
+    if (curTokenKind != TokenKind::BeginKeyword) { //则说明仅有单行表达式
+        expr = parsePrimary();
+    }
+    else { //则说明有多行表达式
+        expr = ParseBegin();
+    }
+    return make_shared<InitialAST>(expr);
 }
 
 std::shared_ptr<ExprAST> Parser::ParseBegin() {
@@ -433,15 +457,30 @@ std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<Exp
 }
 
 void Parser::buildBinopPrecedence() {
-    BinopPrecedence_umap['<'] = 10;
-    BinopPrecedence_umap['>'] = 10;
-    BinopPrecedence_umap['+'] = 20;
-    BinopPrecedence_umap['-'] = 20;
-    BinopPrecedence_umap['*'] = 40;
-    BinopPrecedence_umap['/'] = 40;
-    BinopPrecedence_umap['%'] = 40;
-    BinopPrecedence_umap['&'] = 40;
-    BinopPrecedence_umap['|'] = 40;
+    BinopPrecedence_umap["++"] = 5;
+    BinopPrecedence_umap["--"] = 5;
+    BinopPrecedence_umap["<"] = 10;
+    BinopPrecedence_umap[">"] = 10;
+    BinopPrecedence_umap["+"] = 20;
+    BinopPrecedence_umap["-"] = 20;
+    BinopPrecedence_umap["*"] = 40;
+    BinopPrecedence_umap["/"] = 40;
+    BinopPrecedence_umap["%"] = 40;
+    BinopPrecedence_umap["&"] = 40;
+    BinopPrecedence_umap["|"] = 40;
+}
+
+void Parser::buildTypeUset() {
+    Type_uset.insert(TokenKind::IntKeyword);
+    Type_uset.insert(TokenKind::RegKeyword);
+    Type_uset.insert(TokenKind::WireKeyword);
+    Type_uset.insert(TokenKind::ShortIntKeyword);
+    Type_uset.insert(TokenKind::LongIntKeyword);
+    Type_uset.insert(TokenKind::BitKeyword);
+    Type_uset.insert(TokenKind::ByteKeyword);
+    Type_uset.insert(TokenKind::IntegerKeyword);
+    Type_uset.insert(TokenKind::LogicKeyword);
+    Type_uset.insert(TokenKind::PosEdgeKeyword);
 }
 
 int Parser::GetTokPrecedence() {
@@ -461,14 +500,16 @@ int Parser::GetTokPrecedence() {
         && curStr != "|"
         && curStr != "<"
         && curStr != ">"
+        && curStr != "++"
+        && curStr != "--"
         && (curTokenKind == TokenKind::IntegerLiteral || curTokenKind == TokenKind::Identifier)
         ) {
         LE.addnote("expcted an operator", curToken.TL.m_tokenLine);
         return -1;
     }
-    else if (BinopPrecedence_umap.count(curStr.at(0))) {
-        char chOp = curStr.at(0);
-        int TokPrec = BinopPrecedence_umap[chOp];
+    else if (BinopPrecedence_umap.count(curStr)) {
+        //char chOp = curStr.at(0);
+        int TokPrec = BinopPrecedence_umap[curStr];
         if (TokPrec <= 0)
             return -1;
         return TokPrec;
@@ -507,6 +548,16 @@ void Parser::handlAlways_comb() {
     getNextToken();
     if (ParseAlways_comb()) {
         LogP.addnote("parsed Always_comb!");
+    }
+    else {
+        getNextToken();
+    }
+}
+
+void Parser::handInitial() {
+    getNextToken();
+    if (ParseInitial()) {
+        LogP.addnote("parsed Initial!");
     }
     else {
         getNextToken();

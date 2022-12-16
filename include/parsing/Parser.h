@@ -18,11 +18,12 @@ public:
     Token curToken;
     TokenKind curTokenKind;
     unordered_map<string, VariableInformation> VariableInfo_umap; //变量存储表
+    unordered_set<TokenKind> Type_uset; //变量类型表
 private:
     VariableInformation VF; //该VF结构体需要不断被更新，生存周期直到Parser销毁
     unsigned long int m_offset;
     TokenKind variableTypeFlag;
-    unordered_map<char, int> BinopPrecedence_umap;
+    unordered_map<string, int> BinopPrecedence_umap;
     vector<Token> m_tokenVector;
     std::shared_ptr<ExprAST> parsePrimary();
     std::shared_ptr<DefinitionAST> parseModule();
@@ -40,13 +41,16 @@ private:
     std::shared_ptr<ExprAST> ParseBitWide();
     std::shared_ptr<Always_ffAST> ParseAlways_ff();
     std::shared_ptr<Always_combAST> ParseAlways_comb();
+    std::shared_ptr<InitialAST> ParseInitial();
     void mainParser();
     void getNextToken();
     void buildBinopPrecedence();
+    void buildTypeUset();
     int GetTokPrecedence();
     void handlModule();
     void handlAlways_ff();
     void handlAlways_comb();
+    void handInitial();
     void showErrorInformation();
     void showParserInformation();
     void showVariableInformation();
