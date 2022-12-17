@@ -42,6 +42,7 @@ private:
     std::shared_ptr<Always_ffAST> ParseAlways_ff();
     std::shared_ptr<Always_combAST> ParseAlways_comb();
     std::shared_ptr<InitialAST> ParseInitial();
+    std::shared_ptr<ForAST> ParseFor();
     void mainParser();
     void getNextToken();
     void buildBinopPrecedence();
