@@ -38,7 +38,7 @@ longint	64位2态变量；等效于var bit [ 63: 0 ]
 2.module endmodule
 3.二元表达式
 4.数字
-5.位宽，例如[4:0]
+5.位宽，例如bit [3:0] a;
 6.begin end
 7.表达式
 8.()
@@ -47,3 +47,4 @@ longint	64位2态变量；等效于var bit [ 63: 0 ]
 11.if-else
 12.always_ff
 13.always_comb
+14.自增/自减

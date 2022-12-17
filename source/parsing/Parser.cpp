@@ -120,6 +120,11 @@ std::shared_ptr<ExprAST> Parser::parsePrimary() { //解析初级表达式
         auto V = ParseAlways_comb();
         return std::move(V);
     }
+    case TokenKind::ForKeyword: {
+        LogP.addnote("parsing for:");
+        auto V = ParseFor();
+        return std::move(V);
+    }
     case TokenKind::Identifier:
         return ParseIdentifierExpr(TokenKind::NullKeyword);
     case TokenKind::DoublePlus:
@@ -260,6 +265,34 @@ std::shared_ptr<Always_combAST> Parser::ParseAlways_comb() {
     return std::make_shared<Always_combAST>(exprs);
 }
 
+std::shared_ptr<ForAST> Parser::ParseFor() {
+    getNextToken(); //eat for关键字
+    if (curTokenKind != TokenKind::OpenParenthesis) { //此时期待一个(
+        LE.addnote("expected '('", curToken.TL.m_tokenLine);
+        return nullptr;
+    }
+    getNextToken(); //eat (
+    auto init = ParseExpression();
+    if (curTokenKind != TokenKind::Semicolon) {
+        LE.addnote("expected ';'", curToken.TL.m_tokenLine);
+    }
+    getNextToken(); //eat ;
+    auto LHS = ParseIdentifierExpr(TokenKind::NullKeyword);
+    auto cmp = ParseCmpOpRHS(LHS);
+    if (curTokenKind != TokenKind::Semicolon) {
+        LE.addnote("expected ';'", curToken.TL.m_tokenLine);
+    }
+    getNextToken(); //eat ;
+    auto step = ParseExpression();
+    if (curTokenKind != TokenKind::CloseParenthesis) {
+        LE.addnote("expected ')'", curToken.TL.m_tokenLine);
+        return nullptr;
+    }
+    getNextToken(); //eat )
+    auto expr = ParseExpression();
+    return std::make_shared<ForAST>(expr, init, cmp, step);
+}
+
 std::shared_ptr<InitialAST> Parser::ParseInitial() {
     getNextToken(); //eat Initial关键字
     shared_ptr<ExprAST> expr = nullptr;
@@ -308,7 +341,7 @@ std::shared_ptr<ExprAST> Parser::ParseElse() {
     return std::move(std::make_shared<ElseAST>(expr));
 }
 
-std::shared_ptr<ExprAST> Parser::ParseParenExpr() {
+std::shared_ptr<ExprAST> Parser::ParseParenExpr() { //不可适用于for()
     getNextToken(); // eat (.
     shared_ptr<ExprAST> V = nullptr;
     switch (curTokenKind) {
@@ -349,7 +382,8 @@ std::shared_ptr<ExprAST> Parser::ParseCmpOpRHS(std::shared_ptr<ExprAST> LHS) {
     case TokenKind::GreaterThanEquals:
     case TokenKind::GreaterThan:
     case TokenKind::LessThan:
-        op = curToken.getTokenKindStr();
+        op = curToken.getTokenStr();
+        break;
     default:
         LE.addnote("expected a compare operator", curToken.TL.m_tokenLine);
         return nullptr;
@@ -375,6 +409,7 @@ std::shared_ptr<ExprAST> Parser::ParseCmpOpRHS(std::shared_ptr<ExprAST> LHS) {
         LE.addnote("expected expression", curToken.TL.m_tokenLine);
         break;
     }
+    LogP.addnote("->parsing a comparison expression");
     return make_shared<CmpExprAST>(op, LHS, RHS);
 }
 
@@ -416,7 +451,7 @@ std::shared_ptr<ExprAST> Parser::ParseIdentifierExpr(TokenKind varType) {
         break;
     }
     getNextToken();
-    auto V = std::make_shared<VariableExprAST>(IdName, VF.kind); //需要判断后面是否为;号?
+    auto V = std::make_shared<VariableExprAST>(IdName, VariableInfo_umap[IdName].kind); //需要判断后面是否为;号?
     return std::move(V);
 }
 
@@ -488,7 +523,7 @@ int Parser::GetTokPrecedence() {
     if (curStr == "=") {
         return 1;
     }
-    else if (curStr == ";") {
+    else if (curStr == ";" || curStr == ")") {
         return -1;
     }
     else if (curStr != "+" //增加对curTokenKind的判断，增强函数健壮性
