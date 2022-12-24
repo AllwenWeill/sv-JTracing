@@ -600,14 +600,14 @@ void Parser::handInitial() {
 }
 
 void Parser::showErrorInformation() {
-    cout << "-----------<ErrorInformation>---------" << endl;
+    cout << "------------<ErrorInformation>-----------" << endl;
     for (auto errorNote : LE.errorNotes) {
         cout << errorNote;
     }
 }
 
 void Parser::showParserInformation() {
-    cout << "-----------<ParserInformation>---------" << endl;
+    cout << "-----------<ParserInformation>-----------" << endl;
     for (auto note : LogP.parserNotes) {
         cout << note << endl;
     }
