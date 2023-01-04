@@ -1,19 +1,22 @@
+SVJ_PATH = .
 
-INCLUDE_PATH = -I./include/preprocessing/
-INCLUDE_PATH += -I./include/parsing/
-INCLUDE_PATH += -I./include/utility/
-INCLUDE_PATH += -I./include/syntax/
-INCLUDE_PATH += -I./include/ast/
-INCLUDE_PATH += -I./include/handlError/
+INCLUDE_PATH = -I${SVJ_PATH}/include/preprocessing/ \
+-I${SVJ_PATH}/include/parsing/ \
+-I${SVJ_PATH}/include/utility/ \
+-I${SVJ_PATH}/include/syntax/ \
+-I${SVJ_PATH}/include/ast/ \
+-I${SVJ_PATH}/include/handlMessage/ \
 
-SRC_PATH = source/main.cpp
-SRC_PATH += source/preprocessing/SourceManager.cpp
-SRC_PATH += source/parsing/Lexer.cpp
-SRC_PATH += source/parsing/Token.cpp
-SRC_PATH += source/parsing/Parser.cpp
-SRC_PATH += source/handlError/LogError.cpp
+SRC_PATH = ${SVJ_PATH}/source/main.cpp \
+${SVJ_PATH}/source/preprocessing/SourceManager.cpp \
+${SVJ_PATH}/source/parsing/Lexer.cpp \
+${SVJ_PATH}/source/parsing/Token.cpp \
+${SVJ_PATH}/source/parsing/TokenKind.cpp \
+${SVJ_PATH}/source/parsing/Parser.cpp \
+${SVJ_PATH}/source/handlMessage/LogError.cpp \
+${SVJ_PATH}/source/handlMessage/LogParser.cpp
 
-OFILE = main.o SourceManager.o Lexer.o Token.o LogError.o Parser.o
+OFILE = $(patsubst %.cpp,%.o,$(SRC_PATH))
 
 Q = @
 COMPILE = /usr/bin/
@@ -31,34 +34,14 @@ TAR = svj
  
 svj: ${OFILE}
 	${ECHO} "making ${TAR}!!"
-	${CXX} ${LDFLAGS} ${OFILE} -o ${TAR}
+	${CXX} ${LDFLAGS} -o $@ $^
 	${SIZE} ${TAR}
 
-main.o: source/main.cpp
-	${ECHO} "cxx main.cpp"
-	${CXX} ${CXXFLAGS} -c source/main.cpp -o main.o
-
-SourceManager.o: source/preprocessing/SourceManager.cpp
-	${ECHO} "cxx SourceManager.cpp"
-	${CXX} ${CXXFLAGS} -c source/preprocessing/SourceManager.cpp -o SourceManager.o
-
-Lexer.o: source/parsing/Lexer.cpp
-	${ECHO} "cxx Lexer.cpp"
-	${CXX} ${CXXFLAGS} -c source/parsing/Lexer.cpp -o Lexer.o
-
-Token.o: source/parsing/Token.cpp
-	${ECHO} "cxx Token.cpp"
-	${CXX} ${CXXFLAGS} -c source/parsing/Token.cpp -o Token.o
-
-Parser.o: source/parsing/Parser.cpp
-	${ECHO} "cxx Parser.cpp"
-	${CXX} ${CXXFLAGS} -c source/parsing/Parser.cpp -o Parser.o
-
-LogError.o: source/handlError/LogError.cpp
-	${ECHO} "cxx LogError.cpp"
-	${CXX} ${CXXFLAGS} -c source/handlError/LogError.cpp -o LogError.o
+${OFILE}: ${SRC_PATH}
+	${ECHO} "cxx $@"
+	${CXX} ${CXXFLAGS} -c $(patsubst %.o,%.cpp,$@) -o $@ 
 
 .PHONY : clean
 clean :
 	${ECHO} "cleaning"
-	rm *.o ${TAR}
+	rm ${OFILE} ${TAR}
