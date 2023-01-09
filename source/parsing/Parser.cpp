@@ -41,7 +41,7 @@ void Parser::mainParser() {
             handInitial();
             break;
         default:
-            if(Type_uset.count(curTokenKind)) //Èç¹ûÔÚType±íÖÐ£¬ÔòËµÃ÷µ±Ç°tokenÎªintµÈÀàÐÍ¹Ø¼ü×Ö£¬ÔòÌø¹ý
+            if(Type_uset.count(curTokenKind)) //ï¿½ï¿½ï¿½ï¿½ï¿½Typeï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½Ç°tokenÎªintï¿½ï¿½ï¿½ï¿½ï¿½Í¹Ø¼ï¿½ï¿½Ö£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 getNextToken();
             ParseExpression();
             break;
@@ -54,7 +54,7 @@ void Parser::getNextToken() {
     curTokenKind = curToken.getTokenKind();
 }
 
-std::shared_ptr<ExprAST> Parser::parsePrimary() { //½âÎö³õ¼¶±í´ïÊ½
+std::shared_ptr<ExprAST> Parser::parsePrimary() { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½
     switch (curTokenKind) {
     case TokenKind::Unknown: {
         string tmpStr = "Unknown the ";
@@ -133,6 +133,8 @@ std::shared_ptr<ExprAST> Parser::parsePrimary() { //½âÎö³õ¼¶±í´ïÊ½
         getNextToken();//eat op
         return std::move(V);
     }
+    default:
+        break;
     }
     getNextToken();
     switch (curTokenKind) {
@@ -161,22 +163,22 @@ std::shared_ptr<ExprAST> Parser::parsePrimary() { //½âÎö³õ¼¶±í´ïÊ½
 
 std::shared_ptr<ExprAST> Parser::ParseBitWide() {
     getNextToken();
-    if (curTokenKind != TokenKind::IntegerLiteral) { //[]ÄÚµÚÒ»¸öTokenÆÚ´ýµÄÊÇÊý×ÖÀàÐÍµÄ³£Êý
+    if (curTokenKind != TokenKind::IntegerLiteral) { //[]ï¿½Úµï¿½Ò»ï¿½ï¿½Tokenï¿½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÍµÄ³ï¿½ï¿½ï¿½
         LE.addnote("reference to non-constant variable is not allowed in a constant expression", curToken.TL.m_tokenLine);
         return nullptr;
     }
     auto numWide = ParseNumber(); 
-    if (curTokenKind != TokenKind::Colon) { //´ËÊ±ÆÚ´ýÒ»¸ö:
+    if (curTokenKind != TokenKind::Colon) { //ï¿½ï¿½Ê±ï¿½Ú´ï¿½Ò»ï¿½ï¿½:
         LE.addnote("packed dimensions require a full range specification", curToken.TL.m_tokenLine);
         return nullptr;
     }
     getNextToken();
-    if (curTokenKind != TokenKind::IntegerLiteral) { //[]ÄÚ×îºóÒ»¸öTokenÆÚ´ýµÄÊÇÊý×ÖÀàÐÍµÄ³£Êý
+    if (curTokenKind != TokenKind::IntegerLiteral) { //[]ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Tokenï¿½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÍµÄ³ï¿½ï¿½ï¿½
         LE.addnote("reference to non-constant variable is not allowed in a constant expression", curToken.TL.m_tokenLine);
         return nullptr;
     }
     auto numRange = ParseNumber();
-    if (curTokenKind != TokenKind::CloseBracket) { //´ËÊ±ÆÚ´ýÒ»¸ö]
+    if (curTokenKind != TokenKind::CloseBracket) { //ï¿½ï¿½Ê±ï¿½Ú´ï¿½Ò»ï¿½ï¿½]
         LE.addnote("expected ']'", curToken.TL.m_tokenLine);
         return nullptr;
     }
@@ -194,9 +196,9 @@ std::shared_ptr<ExprAST> Parser::ParseNumber() {
     return std::move(Result);
 }
 
-// std::shared_ptr<PrototypeAST> Parser::ParseModulePrototype(){ //½âÎömoduleÉùÃ÷£¨¿ÉÄÜ²»ÐèÒª£¿£©
+// std::shared_ptr<PrototypeAST> Parser::ParseModulePrototype(){ //ï¿½ï¿½ï¿½ï¿½moduleï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü²ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½
 //     getNextToken();
-//     if(curTokenKind != TokenKind::Identifier){ //moduleÐèÒªÓÐmoduleÃû
+//     if(curTokenKind != TokenKind::Identifier){ //moduleï¿½ï¿½Òªï¿½ï¿½moduleï¿½ï¿½
 //         LE.addnote("expected function name in module", curToken.TL.m_tokenLine);
 //         return nullptr;
 //     }
@@ -209,9 +211,9 @@ std::shared_ptr<ExprAST> Parser::ParseNumber() {
 //     return std::make_shared<PrototypeAST>(moduleName);
 // }
 
-std::shared_ptr<DefinitionAST> Parser::ParseModuleDefinition() { //½âÎömoduleÊµÏÖ
+std::shared_ptr<DefinitionAST> Parser::ParseModuleDefinition() { //ï¿½ï¿½ï¿½ï¿½moduleÊµï¿½ï¿½
     getNextToken();
-    if (curTokenKind != TokenKind::Identifier) { //moduleÐèÒªÓÐmoduleÃû
+    if (curTokenKind != TokenKind::Identifier) { //moduleï¿½ï¿½Òªï¿½ï¿½moduleï¿½ï¿½
         LE.addnote("expected function name in module", curToken.TL.m_tokenLine);
         return nullptr;
     }
@@ -240,7 +242,7 @@ std::shared_ptr<DefinitionAST> Parser::ParseModuleDefinition() { //½âÎömoduleÊµÏ
 }
 
 std::shared_ptr<Always_ffAST> Parser::ParseAlways_ff() {
-    getNextToken(); //eat Always_ff¹Ø¼ü×Ö
+    getNextToken(); //eat Always_ffï¿½Ø¼ï¿½ï¿½ï¿½
     if (curTokenKind != TokenKind::At) {
         LE.addnote("always_ff procedure must have one and only one event control", curToken.TL.m_tokenLine);
         return nullptr;
@@ -260,14 +262,14 @@ std::shared_ptr<Always_ffAST> Parser::ParseAlways_ff() {
 }
 
 std::shared_ptr<Always_combAST> Parser::ParseAlways_comb() {
-    getNextToken(); //eat Always_comb¹Ø¼ü×Ö
+    getNextToken(); //eat Always_combï¿½Ø¼ï¿½ï¿½ï¿½
     auto exprs = parsePrimary();
     return std::make_shared<Always_combAST>(exprs);
 }
 
 std::shared_ptr<ForAST> Parser::ParseFor() {
-    getNextToken(); //eat for¹Ø¼ü×Ö
-    if (curTokenKind != TokenKind::OpenParenthesis) { //´ËÊ±ÆÚ´ýÒ»¸ö(
+    getNextToken(); //eat forï¿½Ø¼ï¿½ï¿½ï¿½
+    if (curTokenKind != TokenKind::OpenParenthesis) { //ï¿½ï¿½Ê±ï¿½Ú´ï¿½Ò»ï¿½ï¿½(
         LE.addnote("expected '('", curToken.TL.m_tokenLine);
         return nullptr;
     }
@@ -294,12 +296,12 @@ std::shared_ptr<ForAST> Parser::ParseFor() {
 }
 
 std::shared_ptr<InitialAST> Parser::ParseInitial() {
-    getNextToken(); //eat Initial¹Ø¼ü×Ö
+    getNextToken(); //eat Initialï¿½Ø¼ï¿½ï¿½ï¿½
     shared_ptr<ExprAST> expr = nullptr;
-    if (curTokenKind != TokenKind::BeginKeyword) { //ÔòËµÃ÷½öÓÐµ¥ÐÐ±í´ïÊ½
+    if (curTokenKind != TokenKind::BeginKeyword) { //ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½Ð±ï¿½ï¿½ï¿½Ê½
         expr = parsePrimary();
     }
-    else { //ÔòËµÃ÷ÓÐ¶àÐÐ±í´ïÊ½
+    else { //ï¿½ï¿½Ëµï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Ð±ï¿½ï¿½ï¿½Ê½
         expr = ParseBegin();
     }
     return make_shared<InitialAST>(expr);
@@ -341,12 +343,12 @@ std::shared_ptr<ExprAST> Parser::ParseElse() {
     return std::move(std::make_shared<ElseAST>(expr));
 }
 
-std::shared_ptr<ExprAST> Parser::ParseParenExpr() { //²»¿ÉÊÊÓÃÓÚfor()
+std::shared_ptr<ExprAST> Parser::ParseParenExpr() { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½for()
     getNextToken(); // eat (.
     shared_ptr<ExprAST> V = nullptr;
     switch (curTokenKind) {
     case TokenKind::Identifier: {
-        if (!VariableInfo_umap.count(curToken.getTokenStr())) { //Èç¹û¸Ã±êÊ¶·û²»´æÔÚ£¬ÔòËµÃ÷µ÷ÓÃÎ´¶¨Òå±êÊ¶·û
+        if (!VariableInfo_umap.count(curToken.getTokenStr())) { //ï¿½ï¿½ï¿½ï¿½Ã±ï¿½Ê¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½ï¿½Ê¶ï¿½ï¿½
             string tmpStr = "use of undeclared identifier '";
             tmpStr += curToken.getTokenStr();
             tmpStr += "'";
@@ -354,7 +356,7 @@ std::shared_ptr<ExprAST> Parser::ParseParenExpr() { //²»¿ÉÊÊÓÃÓÚfor()
             return nullptr;
         }
         auto LHS = ParseIdentifierExpr(TokenKind::NullKeyword);
-        if (curTokenKind != TokenKind::CloseParenthesis) { //Èç¹û²»Îª)ÔòËµÃ÷ºóÃæÈÔÐèÅÐ¶Ï
+        if (curTokenKind != TokenKind::CloseParenthesis) { //ï¿½ï¿½ï¿½ï¿½ï¿½Îª)ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
             V = ParseCmpOpRHS(LHS);
         }
         break;
@@ -392,7 +394,7 @@ std::shared_ptr<ExprAST> Parser::ParseCmpOpRHS(std::shared_ptr<ExprAST> LHS) {
     shared_ptr<ExprAST> RHS = nullptr;
     switch (curTokenKind) {
     case TokenKind::Identifier: {
-        if (!VariableInfo_umap.count(curToken.getTokenStr())) { //Èç¹û¸Ã±êÊ¶·û²»´æÔÚ£¬ÔòËµÃ÷µ÷ÓÃÎ´¶¨Òå±êÊ¶·û
+        if (!VariableInfo_umap.count(curToken.getTokenStr())) { //ï¿½ï¿½ï¿½ï¿½Ã±ï¿½Ê¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½ï¿½Ê¶ï¿½ï¿½
             string tmpStr = "use of undeclared identifier '";
             tmpStr += curToken.getTokenStr();
             tmpStr += "'";
@@ -425,19 +427,19 @@ std::shared_ptr<ExprAST> Parser::ParseIdentifierExpr(TokenKind varType) {
     case TokenKind::IntegerKeyword:
     case TokenKind::RegKeyword:
     case TokenKind::PosEdgeKeyword:{
-        if (VariableInfo_umap.count(IdName)) { //Èç¹û¸Ã±êÊ¶·ûÒÑ¾­´æÔÚ£¬ÔòËµÃ÷ÖØ¸´¶¨Òå
+        if (VariableInfo_umap.count(IdName)) { //ï¿½ï¿½ï¿½ï¿½Ã±ï¿½Ê¶ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½Ø¸ï¿½ï¿½ï¿½ï¿½ï¿½
             LE.addnote("previous definition here", curToken.TL.m_tokenLine);
             return nullptr;
         }
-        //Èç¹ûÎªÊ×´Î¶¨Òå£¬ÔòË¢ÐÂVF½á¹¹ÌåÄÚµÄ±äÁ¿ÐÅÏ¢£¬²¢¼ÓÈë±äÁ¿±í
+        //ï¿½ï¿½ï¿½Îªï¿½×´Î¶ï¿½ï¿½å£¬ï¿½ï¿½Ë¢ï¿½ï¿½VFï¿½á¹¹ï¿½ï¿½ï¿½ÚµÄ±ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         VF.name = IdName;
         VF.kind = TokenKindtoString(varType);
         VariableInfo_umap[IdName] = VF;
-        variableTypeFlag = TokenKind::NullKeyword; //½«±êÊ¶·ûflag»¹Ô­
+        variableTypeFlag = TokenKind::NullKeyword; //ï¿½ï¿½ï¿½ï¿½Ê¶ï¿½ï¿½flagï¿½ï¿½Ô­
         break;
     }
-    case TokenKind::NullKeyword: //ËµÃ÷·Ç¶¨Òå±äÁ¿£¬¸Ã±êÊ¶·û±»µ÷ÓÃ
-        if (!VariableInfo_umap.count(IdName)) { //Èç¹û¸Ã±êÊ¶·û²»´æÔÚ£¬ÔòËµÃ÷µ÷ÓÃÎ´¶¨Òå±êÊ¶·û
+    case TokenKind::NullKeyword: //Ëµï¿½ï¿½ï¿½Ç¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã±ï¿½Ê¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        if (!VariableInfo_umap.count(IdName)) { //ï¿½ï¿½ï¿½ï¿½Ã±ï¿½Ê¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½ï¿½Ê¶ï¿½ï¿½
             string tmpStr = "use of undeclared identifier '";
             tmpStr += IdName;
             tmpStr += "'";
@@ -445,13 +447,13 @@ std::shared_ptr<ExprAST> Parser::ParseIdentifierExpr(TokenKind varType) {
             return nullptr;
         }
         break;
-    default: //²»·ûºÏ¶¨ÒåÀàÐÍµÄ¹Ø¼ü×Ö
+    default: //ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÍµÄ¹Ø¼ï¿½ï¿½ï¿½
         LE.addnote("invaild type", curToken.TL.m_tokenLine);
         return nullptr;
         break;
     }
     getNextToken();
-    auto V = std::make_shared<VariableExprAST>(IdName, VariableInfo_umap[IdName].kind); //ÐèÒªÅÐ¶ÏºóÃæÊÇ·ñÎª;ºÅ?
+    auto V = std::make_shared<VariableExprAST>(IdName, VariableInfo_umap[IdName].kind); //ï¿½ï¿½Òªï¿½Ð¶Ïºï¿½ï¿½ï¿½ï¿½Ç·ï¿½Îª;ï¿½ï¿½?
     return std::move(V);
 }
 
@@ -464,11 +466,11 @@ std::shared_ptr<ExprAST> Parser::ParseExpression() {
     return ParseBinOpRHS(0, std::move(LHS));
 }
 
-std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<ExprAST> LHS) { //½âÎö¶þÔª±í´ïÊ½µÄÓÒ°ë²¿·Ö
+std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<ExprAST> LHS) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½ï¿½Ò°ë²¿ï¿½ï¿½
     if (curTokenKind == TokenKind::Semicolon)
         return nullptr;
     while (1) {
-        int curTokenPrec = GetTokPrecedence(); //»ñÈ¡µ±Ç°TokenÔËËã·ûµÄÓÅÏÈ¼¶
+        int curTokenPrec = GetTokPrecedence(); //ï¿½ï¿½È¡ï¿½ï¿½Ç°Tokenï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
         if (curTokenPrec < ExprPrec)
             return LHS;
         string BinOp = curToken.getTokenStr();
@@ -476,7 +478,7 @@ std::shared_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::shared_ptr<Exp
         if (!RHS)
             return nullptr;
         LogP.addnote("->parsing a Binary Expression...");
-        int nextOpPrec = GetTokPrecedence(); //»ñÈ¡ÏÂÒ»¸öÔËËã·ûµÄÓÅÏÈ¼¶
+        int nextOpPrec = GetTokPrecedence(); //ï¿½ï¿½È¡ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
         if (curTokenPrec < nextOpPrec) {
             RHS = ParseBinOpRHS(curTokenPrec + 1, std::move(RHS));
             if (RHS == nullptr)
@@ -526,7 +528,7 @@ int Parser::GetTokPrecedence() {
     else if (curStr == ";" || curStr == ")") {
         return -1;
     }
-    else if (curStr != "+" //Ôö¼Ó¶ÔcurTokenKindµÄÅÐ¶Ï£¬ÔöÇ¿º¯Êý½¡×³ÐÔ
+    else if (curStr != "+" //ï¿½ï¿½ï¿½Ó¶ï¿½curTokenKindï¿½ï¿½ï¿½Ð¶Ï£ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×³ï¿½ï¿½
         && curStr != "-"
         && curStr != "*"
         && curStr != "/"
@@ -557,7 +559,7 @@ int Parser::GetTokPrecedence() {
 
 std::shared_ptr<DefinitionAST> Parser::parseModule() {
     getNextToken();
-    return ParseModuleDefinition(); //´Ë´¦ÎÞ·¨Ã÷È·µ½µ×ÊÇ½âÎömoduleÉùÃ÷»¹ÊÇ¶¨Òå£¿
+    return ParseModuleDefinition(); //ï¿½Ë´ï¿½ï¿½Þ·ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½ï¿½Ç½ï¿½ï¿½ï¿½moduleï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¶ï¿½ï¿½å£¿
 }
 
 void Parser::handlModule() {
