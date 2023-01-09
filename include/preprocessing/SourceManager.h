@@ -6,10 +6,10 @@
 using namespace std;
 namespace fs = std::filesystem;
 struct FileData {
-    string filename; //文件名
-    string filememo; //文件内容
-    string filedirectory; //文件目录
-    unsigned long int filesize; //文件大小
+    string filename; //锟侥硷拷锟斤拷
+    string filememo; //锟侥硷拷锟斤拷锟斤拷
+    string filedirectory; //锟侥硷拷目录
+    unsigned long int filesize; //锟侥硷拷锟斤拷小
 };
 class SourceManager {
 public:
@@ -21,5 +21,5 @@ public:
     ~SourceManager() {};
 
 private:
-    fs::path m_filepath; //文件路径
+    fs::path m_filepath; //锟侥硷拷路锟斤拷
 };
