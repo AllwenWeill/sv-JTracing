@@ -1,3 +1,5 @@
+#ifndef PARSER_H
+#define PARSER_H
 #include "allinclude.h"
 #include "Token.h"
 #include "TokenKind.h"
@@ -17,10 +19,10 @@ public:
     LogParser LogP;
     Token curToken;
     TokenKind curTokenKind;
-    unordered_map<string, VariableInformation> VariableInfo_umap; //±äÁ¿´æ´¢±í
-    unordered_set<TokenKind> Type_uset; //±äÁ¿ÀàÐÍ±í
+    unordered_map<string, VariableInformation> VariableInfo_umap; //ï¿½ï¿½ï¿½ï¿½ï¿½æ´¢ï¿½ï¿½
+    unordered_set<TokenKind> Type_uset; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í±ï¿½
 private:
-    VariableInformation VF; //¸ÃVF½á¹¹ÌåÐèÒª²»¶Ï±»¸üÐÂ£¬Éú´æÖÜÆÚÖ±µ½ParserÏú»Ù
+    VariableInformation VF; //ï¿½ï¿½VFï¿½á¹¹ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ï±ï¿½ï¿½ï¿½ï¿½Â£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½Parserï¿½ï¿½ï¿½ï¿½
     unsigned long int m_offset;
     TokenKind variableTypeFlag;
     unordered_map<string, int> BinopPrecedence_umap;
@@ -55,3 +57,4 @@ private:
     void showParserInformation();
     void showVariableInformation();
 };
+#endif
