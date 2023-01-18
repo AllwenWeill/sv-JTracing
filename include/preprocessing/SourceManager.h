@@ -15,7 +15,9 @@ class SourceManager {
 public:
     FileData fd;
     SourceManager(fs::path& filepath);
+    SourceManager(const string& codeText);
     void readSource(fs::path& filepath);
+    void readSource(const string& codeText);
     ~SourceManager() {};
 
 private:
