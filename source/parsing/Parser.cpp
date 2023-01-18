@@ -601,6 +601,7 @@ void Parser::handInitial() {
 
 void Parser::showErrorInformation() {
     cout << "------------<ErrorInformation>-----------" << endl;
+    cout << LE.errorNotes.size() << " errors..." << endl;
     for (auto errorNote : LE.errorNotes) {
         cout << errorNote;
     }
@@ -615,8 +616,8 @@ void Parser::showParserInformation() {
 
 void Parser::showVariableInformation() {
     cout << "-----------<VariableInformation>---------" << endl;
-    cout << "Name--------Tpye-------Content" << endl;
+    cout << "Name--------Tpye" << endl;
     for (auto varInfo : VariableInfo_umap) {
-        cout << varInfo.second.name << "->" << varInfo.second.kind << "->" << varInfo.second.content << endl;
+        cout <<"<" << varInfo.second.name << ">-----<" << varInfo.second.kind << ">" << varInfo.second.content << endl;
     }
 }
