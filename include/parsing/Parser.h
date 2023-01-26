@@ -21,6 +21,9 @@ public:
     TokenKind curTokenKind;
     unordered_map<string, VariableInformation> VariableInfo_umap; //�����洢��
     unordered_set<TokenKind> Type_uset; //�������ͱ�
+    std::string showErrorInformation();
+    std::string showParserInformation();
+    std::string showVariableInformation();
 private:
     VariableInformation VF; //��VF�ṹ����Ҫ���ϱ����£���������ֱ��Parser����
     unsigned long int m_offset;
@@ -54,8 +57,5 @@ private:
     void handlAlways_ff();
     void handlAlways_comb();
     void handInitial();
-    void showErrorInformation();
-    void showParserInformation();
-    void showVariableInformation();
 };
 #endif
