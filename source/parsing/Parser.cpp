@@ -601,25 +601,29 @@ void Parser::handInitial() {
     }
 }
 
-void Parser::showErrorInformation() {
-    cout << "------------<ErrorInformation>-----------" << endl;
-    cout << LE.errorNotes.size() << " errors..." << endl;
+std::string Parser::showErrorInformation() {
+    string res = "-----------<ErrorInformation>---------\n";
     for (auto errorNote : LE.errorNotes) {
-        cout << errorNote;
+        res += errorNote;
     }
+    return res;
 }
 
-void Parser::showParserInformation() {
-    cout << "-----------<ParserInformation>-----------" << endl;
+std::string Parser::showParserInformation() {
+    string res ="-----------<ParserInformation>---------\n";
     for (auto note : LogP.parserNotes) {
-        cout << note << endl;
+        res += note;
     }
+    return res;
 }
 
-void Parser::showVariableInformation() {
-    cout << "-----------<VariableInformation>---------" << endl;
-    cout << "Name--------Tpye" << endl;
-    for (auto varInfo : VariableInfo_umap) {
-        cout <<"<" << varInfo.second.name << ">-----<" << varInfo.second.kind << ">" << varInfo.second.content << endl;
+std::string Parser::showVariableInformation() {
+    string res ="-----------<VariableInformation>---------\n";
+     for (auto varInfo : VariableInfo_umap) {
+        res += varInfo.second.name;
+        res += "->";
+        res += varInfo.second.kind;
+        res += "\n";
     }
+    return res;
 }
