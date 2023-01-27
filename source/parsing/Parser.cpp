@@ -602,7 +602,7 @@ void Parser::handInitial() {
 }
 
 std::string Parser::showErrorInformation() {
-    string res = "-----------<ErrorInformation>---------\n";
+    string res = "----------------<ErrorInformation>----------------\n";
     for (auto errorNote : LE.errorNotes) {
         res += errorNote;
     }
@@ -610,7 +610,7 @@ std::string Parser::showErrorInformation() {
 }
 
 std::string Parser::showParserInformation() {
-    string res ="-----------<ParserInformation>---------\n";
+    string res ="----------------<ParserInformation>----------------\n";
     for (auto note : LogP.parserNotes) {
         res += note;
     }
@@ -618,7 +618,7 @@ std::string Parser::showParserInformation() {
 }
 
 std::string Parser::showVariableInformation() {
-    string res ="-----------<VariableInformation>---------\n";
+    string res ="----------------<VariableInformation>----------------\n";
      for (auto varInfo : VariableInfo_umap) {
         res += varInfo.second.name;
         res += "->";
