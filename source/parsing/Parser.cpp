@@ -613,6 +613,7 @@ std::string Parser::showParserInformation() {
     string res ="----------------<ParserInformation>----------------\n";
     for (auto note : LogP.parserNotes) {
         res += note;
+        res += "\n";
     }
     return res;
 }
