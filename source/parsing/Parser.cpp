@@ -603,6 +603,8 @@ void Parser::handInitial() {
 
 std::string Parser::showErrorInformation() {
     string res = "----------------<ErrorInformation>----------------\n";
+    res += to_string(LE.errorNotes.size());
+    res += " errors...\n";
     for (auto errorNote : LE.errorNotes) {
         res += errorNote;
     }
