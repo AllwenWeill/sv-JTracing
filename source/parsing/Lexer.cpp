@@ -9,10 +9,10 @@ Lexer::Lexer(const string *psm, unsigned long int indexOffset)
     keywoedsCount = 0;
     scanText();
 }
-//function: É¨ï¿½ï¿½×¶Î£ï¿½ ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ð©ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½É´Ê·ï¿½ï¿½ï¿½Ôªï¿½Ä¼òµ¥´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½×¢ï¿½ÍºÍ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿Õ°ï¿½ï¿½Ö·ï¿½Ñ¹ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//function: É¨Ãè½×¶Î£º Ö÷Òª¸ºÔðÍê³ÉÒ»Ð©²»ÐèÒªÉú³É´Ê·¨µ¥ÔªµÄ¼òµ¥´¦Àí£¬±ÈÈçÉ¾³ý×¢ÊÍºÍ½«¶à¸öÁ¬ÐøµÄ¿Õ°××Ö·ûÑ¹Ëõ³ÉÒ»¸ö×Ö·û£¬È»ºó²úÉú´ÊËØÁ÷
 void Lexer::scanText(){
     string tempStr;
-    //cout<<*m_psm<<endl;
+    cout<<*m_psm<<endl;
     while(!islastChar()){
         char tempCh = (*m_psm).at(offset_count);
         //cout<<"tempCh:"<<tempCh<<endl;
@@ -29,7 +29,7 @@ void Lexer::scanText(){
             case '\f':
             case '\0':
             case '\r':
-            case '\n': //ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½
+            case '\n': //±íÊ¾»»ÐÐ
                 lineNum++;
                 keywoedsCount++;
                 keywords.push_back(tempStr);
@@ -41,37 +41,37 @@ void Lexer::scanText(){
                 tempCh = (*m_psm).at(offset_count);
                 switch (tempCh)
                 {
-                case '*':   //ï¿½ï¿½×¢ï¿½ï¿½
+                case '*':   //¿é×¢ÊÍ
                     scanBlockComment();
                     break;
-                case '/':   //ï¿½ï¿½×¢ï¿½ï¿½
+                case '/':   //ÐÐ×¢ÊÍ
                     scanLineComment();
                     break;
-                default:  //Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"/"ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½errorï¿½ï¿½Ï¢
+                default:  //ËµÃ÷½öÓÐ"/"£¬ÐèÒª²úÉúerrorÐÅÏ¢
                     break;
                 }
                 break;
-            default:  //Ëµï¿½ï¿½Îªï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¿Õ¸ï¿½×¢ï¿½Íµï¿½trivial things
-                if(isChar(tempCh)){ //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¸ï¿½ï¿½ï¿½Ø¼ï¿½ï¿½Ö£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ£ï¿½
-                    scanLetter(); //ï¿½ï¿½ï¿½ï¿½É¨ï¿½èµ±Ç°ï¿½ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½Ë´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Â»ï¿½ï¿½ß¿ï¿½Í·ï¿½ï¿½
+            default:  //ËµÃ÷ÎªÆÕÍ¨ÎÄ×Ö×Ö·û£¬¶ø·Ç¿Õ¸ñ×¢ÊÍµÈtrivial things
+                if(isChar(tempCh)){ //Èç¹ûÊÇ×ÖÄ¸£¨¹Ø¼ü×Ö£¬±äÁ¿Ãû³Æ£©
+                    scanLetter(); //Á¬ÐøÉ¨Ãèµ±Ç°×ÖÄ¸´®£¨´Ë´¦´ýÍêÉÆ£¬±äÁ¿Ãû¿ÉÒÔ_ÏÂ»®Ïß¿ªÍ·£©
                     break;
                 }
-                else if(tempCh == '"'){ //ï¿½ï¿½ï¿½ï¿½ï¿½Ë«ï¿½ï¿½ï¿½Å£ï¿½ï¿½ï¿½Îªï¿½Ö·ï¿½ï¿½ï¿½ï¿½Ä±ï¿½
-                    scanString(); //ï¿½ï¿½ï¿½ï¿½É¨ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½
+                else if(tempCh == '"'){ //Èç¹ûÊÇË«ÒýºÅ£¬ÔòÎª×Ö·û´®ÎÄ±¾
+                    scanString(); //Á¬ÐøÉ¨Ãè×Ö·û´®
                     advance();
                 }
-                else if(isNum(tempCh)){ //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-                    scanNumber(); //ï¿½ï¿½ï¿½ï¿½É¨ï¿½èµ±Ç°ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ï¿½×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½
+                else if(isNum(tempCh)){ //Èç¹ûÊÇÊý×Ö
+                    scanNumber(); //Á¬ÐøÉ¨Ãèµ±Ç°Êý×Ö´®£¬×¢ÒâÇø·ÖÐ¡Êýµã
                     break;
                 }
-                else if(isOperator(tempCh)){ //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                else if(isOperator(tempCh)){ //Èç¹ûÊÇÔËËã·û
                     switch(tempCh)
                     {
                         keywords.push_back(tempStr);
                         tempStr.clear();
                         tempStr.push_back(tempCh);
                         keywords.push_back(tempStr);
-                        tempStr.clear(); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðºï¿½ï¿½ï¿½ï¿½à£¬ï¿½ï¿½ï¿½È½ï¿½char×ªstringï¿½ï¿½Ñ¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                        tempStr.clear(); //ÒÔÉÏÈýÐÐºÜÈßÓà£¬¼´ÏÈ½«char×ªstringÔÙÑ¹ÈëÈÝÆ÷
                     case '+': {
                         char nextCh = (*m_psm).at(offset_count + 1);
                         if (nextCh == '+') {
@@ -121,7 +121,7 @@ void Lexer::scanText(){
                             exit(-1);
                     }
                 }
-                else if(isCmpOperator(tempCh)){ //ï¿½ï¿½ï¿½ï¿½Ç±È½Ï·ï¿½
+                else if(isCmpOperator(tempCh)){ //Èç¹ûÊÇ±È½Ï·û
                     keywords.push_back(tempStr);
                     tempStr.clear();
                     tempStr.push_back(tempCh);
@@ -138,13 +138,13 @@ void Lexer::scanText(){
                             advance();
                             break;
                         }
-                        else if(nextCh == ' '){ //Ëµï¿½ï¿½Ö»ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Èºï¿½=
+                        else if(nextCh == ' '){ //ËµÃ÷Ö»ÓÐÒ»¸öµÈºÅ=
                             keywords.push_back(tempStr);
                             tokenVector.push_back(create(TokenKind::Equals, lineNum, keywords.size()-1, "="));
                             tempStr.clear();
                             break;
                         }
-                        else{ //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                        else{ //´ýÍêÉÆ
 
                         }
                     case '<':
@@ -161,7 +161,7 @@ void Lexer::scanText(){
                             tempStr.clear();
                             break;
                         }
-                        else{ //ï¿½ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½Öµï¿½ï¿½ä£¬ï¿½É»ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½>ï¿½ï¿½<ï¿½È½ï¿½ï¿½ï¿½ï¿½
+                        else{ //¿ÉÄÜÊÇ¸³ÖµÓï¾ä£¬¿É»¹ÓÐµ¥´¿µÄ>ºÍ<±È½ÏÇé¿ö
                             tokenVector.push_back(create(TokenKind::LessThan, lineNum, keywords.size()-1, "<"));
                             keywords.push_back(tempStr);
                             tempStr.clear();
@@ -182,7 +182,7 @@ void Lexer::scanText(){
                             tempStr.clear();
                             break;
                         }
-                        else{ //ï¿½ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½Öµï¿½ï¿½ä£¬ï¿½É»ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½>ï¿½ï¿½<ï¿½È½ï¿½ï¿½ï¿½ï¿½
+                        else{ //¿ÉÄÜÊÇ¸³ÖµÓï¾ä£¬¿É»¹ÓÐµ¥´¿µÄ>ºÍ<±È½ÏÇé¿ö
                             tokenVector.push_back(create(TokenKind::GreaterThan, lineNum, keywords.size()-1, ">"));
                             keywords.push_back(tempStr);
                             tempStr.clear();
@@ -201,7 +201,7 @@ void Lexer::scanText(){
                     tokenVector.push_back(create(TokenKind::Colon, lineNum, keywords.size() - 1, ":"));
                     advance();
                 }
-                else if(tempCh == '('){ //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½Þ¿Õ¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½âµ½
+                else if(tempCh == '('){ //Èç¹ûÀ¨ºÅÓëÎÄ±¾ÖÐÎÞ¿Õ¸ñÏàÁ¬£¬ÔòÎÞ·¨¼ì²âµ½
                     tokenVector.push_back(create(TokenKind::OpenParenthesis, lineNum, keywords.size()-1, "("));
                     advance();
                 }
@@ -238,15 +238,15 @@ void Lexer::scanText(){
                 }
         }
     }
-    // cout<<"test:ï¿½ï¿½Ó¡keywordsï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½"<<endl;
-    // for(string str : keywords){
-    //     // for(auto ch : str)
-    //     //     printf("%x ", ch);
-    //     cout<<str<<" "<<endl;
-    // }
+    cout<<"test:´òÓ¡keywordsËùÓÐÔªËØ"<<endl;
+    for(string str : keywords){
+        // for(auto ch : str)
+        //     printf("%x ", ch);
+        cout<<str<<" "<<endl;
+    }
     cout<<"TokenKind:------------"<<endl;
     for(auto k : tokenVector){
-        cout<<k.getTokenStr()<<":"<<k.getTokenKindStr()<<"ï¿½Ðºï¿½:"<<k.TL.m_tokenLine<<endl;
+        cout<<k.getTokenStr()<<":"<<k.getTokenKindStr()<<"ÐÐºÅ:"<<k.TL.m_tokenLine<<endl;
     }
 }
 void Lexer::advance(){
@@ -255,7 +255,7 @@ void Lexer::advance(){
 void Lexer::advance(int count){
     offset_count += count;
 }
-bool Lexer::islastChar(){//ï¿½ï¿½'/0'Ò²ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï£ï¿½ï¿½ï¿½ï¿½Ç²ï¿½ï¿½ï¿½
+bool Lexer::islastChar(){//ÓÃ'/0'Ò²¿ÉÒÔÅÐ¶Ï£¬µ«ÊÇ²»¹»
     if(offset_count >= m_indexOffset){
         tokenVector.push_back(create(TokenKind::EndOfFile, lineNum, keywords.size()-1, "EOF"));
         return true;
@@ -267,7 +267,7 @@ bool Lexer::islastChar(){//ï¿½ï¿½'/0'Ò²ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï£ï¿½ï¿½ï¿½ï¿½Ç²ï¿½ï¿½ï¿
 void Lexer::scanBlockComment(){
     while(true){
         char tempCh = (*m_psm).at(offset_count);
-        if (tempCh == '*' && (*m_psm).at(offset_count+1) == '/') { //ï¿½Ë´ï¿½offset_count+1ï¿½ï¿½Ô½ï¿½ï¿½ï¿½ï¿½ï¿½
+        if (tempCh == '*' && (*m_psm).at(offset_count+1) == '/') { //´Ë´¦offset_count+1ÓÐÔ½½ç·çÏÕ
             advance(2);
             break;
         } 
@@ -282,7 +282,7 @@ void Lexer::scanBlockComment(){
 void Lexer::scanLineComment(){
     while (true) {
         char tempCh = (*m_psm).at(offset_count);
-        if (tempCh == 0x0a) {//0x0aï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½
+        if (tempCh == 0x0a) {//0x0a±íÊ¾»»ÐÐ
             lineNum++;
             advance(1);
             break;
@@ -345,14 +345,14 @@ void Lexer::scanLetter(){
     while(true){
         advance();
         char tempCh = (*m_psm).at(offset_count);
-        //if(tempCh == '(') //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½É¨ï¿½ï¿½D(x)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-        if(tempCh == ' ' || tempCh == 0x0a || !isChar(tempCh)){ //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¸ï¿½ï¿½ï¿½ß»ï¿½ï¿½ï¿½
+        //if(tempCh == '(') //¿ÉÄÜÐèÒª¼ÓÉ¨ÃèD(x)ÕâÖÖÇé¿ö
+        if(tempCh == ' ' || tempCh == 0x0a || !isChar(tempCh)){ //Èç¹ûÓöµ½¿Õ¸ñ»òÕß»»ÐÐ
             keywords.push_back(tmpStr);
             TokenKind kind;
-            if(lookupKeyword(tmpStr, kind)){ //Ëµï¿½ï¿½ï¿½Ç¹Ø¼ï¿½ï¿½ï¿½
-                tokenVector.push_back(create(kind, lineNum, keywords.size()-1, tmpStr)); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Token
+            if(lookupKeyword(tmpStr, kind)){ //ËµÃ÷ÊÇ¹Ø¼ü×Ö
+                tokenVector.push_back(create(kind, lineNum, keywords.size()-1, tmpStr)); //³õ²½´´½¨Token
             }
-            else{ //Ëµï¿½ï¿½ï¿½Ç±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¥ï¿½ï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½Ê¶ï¿½ï¿½ï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½Ø¼ï¿½ï¿½ï¿½
+            else{ //ËµÃ÷ÊÇ±äÁ¿Ãû»òÕß´íÎó(´ýÍêÉÆÆ¥Åä´íÎó)£¬Ã»ÓÐÇø·Ö±êÊ¶·û»òÕß´íÎó¹Ø¼ü×Ö
                 tokenVector.push_back(create(TokenKind::Identifier, lineNum, keywords.size()-1, tmpStr)); 
             }
             return ;
@@ -367,7 +367,7 @@ void Lexer::scanString(){
     while(true){
         advance();
         char tempCh = (*m_psm).at(offset_count);
-        if(tempCh == '"'){ //ï¿½ï¿½ï¿½É¨ï¿½èµ½Ë«ï¿½ï¿½ï¿½ÅµÄ½ï¿½Î²
+        if(tempCh == '"'){ //Èç¹ûÉ¨Ãèµ½Ë«ÒýºÅµÄ½áÎ²
             tokenVector.push_back(create(TokenKind::StringLiteral, lineNum, keywords.size()-1, tmpStr));
             return ;
         }
@@ -380,7 +380,7 @@ void Lexer::scanString(){
         }
     }
 }
-void Lexer::scanNumber(){ //ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½(Ò²ï¿½ï¿½ï¿½Ü²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö£ï¿½Ö»ï¿½ï¿½ÒªÊ¶ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ã¼´ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ï¿½Ü³ï¿½ï¿½Ö¶ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½
+void Lexer::scanNumber(){ //ÐèÒªÇø·ÖÐ¡Êýµã(Ò²¿ÉÄÜ²»ÓÃÇø·Ö£¬Ö»ÐèÒªÊ¶±ðÐ¡Êýµã¼´¿É)£¬²»ÄÜ³öÏÖ¶à¸öÐ¡Êýµã
     bool isDecimal = false;
     string tmpStr;
     tmpStr.push_back((*m_psm).at(offset_count));
@@ -390,27 +390,27 @@ void Lexer::scanNumber(){ //ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½(Ò²ï¿½ï¿½ï¿½Ü²ï¿½ï
         if(tempCh == '.'){
             isDecimal = true;
         }
-        else if(tempCh == ' ' || tempCh == 0x0a || !isNum(tempCh)){ //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¸ï¿½ï¿½ï¿½ß»ï¿½ï¿½ï¿½
+        else if(tempCh == ' ' || tempCh == 0x0a || !isNum(tempCh)){ //Èç¹ûÓöµ½¿Õ¸ñ»òÕß»»ÐÐ
             keywords.push_back(tmpStr);
             if(isDecimal){
-                tokenVector.push_back(create(TokenKind::IntegerLiteral, lineNum, keywords.size()-1, tmpStr)); //ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½Tokenï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½
+                tokenVector.push_back(create(TokenKind::IntegerLiteral, lineNum, keywords.size()-1, tmpStr)); //Ìí¼ÓÐ¡ÊýToken£¬ºÃÏñ²»ÓÃÇø·ÖÐ¡Êý
             }
             else{
-                tokenVector.push_back(create(TokenKind::IntegerLiteral, lineNum, keywords.size()-1, tmpStr)); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Token
+                tokenVector.push_back(create(TokenKind::IntegerLiteral, lineNum, keywords.size()-1, tmpStr)); //Ìí¼ÓÕûÊýToken
             }
             return ;
         }
     }
 }
-bool Lexer::lookupKeyword(string targetStr, TokenKind &kind){ //ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½Ç·ï¿½Îªï¿½Ø¼ï¿½ï¿½ï¿½
+bool Lexer::lookupKeyword(string targetStr, TokenKind &kind){ //²éÕÒÄ¿±ê×Ó×Ö·û´®ÊÇ·ñÎª¹Ø¼ü×Ö
     //std::initializer_list<std::pair<string_view, TokenKind>> allKeywords = {KEYWORDS_1364_1995};
     unordered_map<string_view, TokenKind> allKeywords_map = {KEYWORDS_1364_1995};
-    if(allKeywords_map.count(targetStr)){ //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¹Ø¼ï¿½ï¿½ï¿½mapï¿½ï¿½
+    if(allKeywords_map.count(targetStr)){ //Èç¹û´æÔÚÔÚ¹Ø¼ü×ÖmapÖÐ
         kind = allKeywords_map[targetStr];
         return true;
     }
     else{
-        kind = TokenKind::StringLiteral; //Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½Ö·ï¿½ï¿½ï¿½
+        kind = TokenKind::StringLiteral; //ËµÃ÷ÊÇÆÕÍ¨×Ö·û´®
     }
     return false;
 } 

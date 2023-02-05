@@ -1,5 +1,3 @@
-#ifndef LEXER_H
-#define LEXER_H
 #include "allinclude.h"
 #include "SourceManager.h"
 #include "Allocator.h"
@@ -19,7 +17,7 @@ public:
 private:
     vector<string> keywords;
     vector<Token> tokenVector;
-    const string *m_psm; //Ö¸ï¿½ï¿½ï¿½Ä±ï¿½Ö¸ï¿½ï¿½Ä¸ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
+    const string *m_psm; //Ö¸ÏòÎÄ±¾Ö¸ÕëµÄ¸±±¾Ö¸Õë
     const string *init_psm;
     void advance();
     void advance(int count);
@@ -28,17 +26,16 @@ private:
     unsigned long int offset_count;
     int lineNum;
     int keywoedsCount;
-    void scanBlockComment();//ï¿½ï¿½ï¿½ï¿½"/*",ï¿½ï¿½"/*"ï¿½ï¿½×¢ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½"*/"ï¿½ï¿½ï¿½ï¿½Î²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¨ï¿½èµ½Ä©Î²"*/"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½
-    void scanLineComment();//ï¿½ï¿½ï¿½ï¿½"//",ï¿½ï¿½"//"ï¿½ï¿½×¢ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ð¾ï¿½ï¿½ï¿½×¢ï¿½Í£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¨ï¿½è»»ï¿½Ð·ï¿½Îªï¿½ï¿½ï¿½ï¿½Î²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½
-    void scanLetter(); //ï¿½ï¿½ï¿½ï¿½É¨ï¿½èµ±Ç°ï¿½ï¿½Ä¸ï¿½ï¿½
-    void scanNumber(); //ï¿½ï¿½ï¿½ï¿½É¨ï¿½èµ±Ç°ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ï¿½×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½
-    void scanString(); //ï¿½ï¿½ï¿½ï¿½É¨ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½
+    void scanBlockComment();//¼´ÓÃ"/*",ÓÃ"/*"À´×¢ÊÍÐèÒªÒÔ"*/"À´½áÎ²£¬Òò´ËÐèÉ¨Ãèµ½Ä©Î²"*/"À´Ìø¹ý×¢ÊÍ
+    void scanLineComment();//¼´ÓÃ"//",ÓÃ"//"À´×¢ÊÍÔòÒ»ÕûÐÐ¾ù±»×¢ÊÍ£¬Òò´ËÐèÉ¨Ãè»»ÐÐ·ûÎª±¾ÐÐÎ²²¿À´Ìø¹ý×¢ÊÍ
+    void scanLetter(); //Á¬ÐøÉ¨Ãèµ±Ç°×ÖÄ¸´®
+    void scanNumber(); //Á¬ÐøÉ¨Ãèµ±Ç°Êý×Ö´®£¬×¢ÒâÇø·ÖÐ¡Êýµã
+    void scanString(); //Á¬ÐøÉ¨Ãè×Ö·û´®
     Token create(TokenKind kind, int tokenLine, int tokenNum, string tokenString);
-    bool lookupKeyword(string targetStr, TokenKind &kind); //ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½Ç·ï¿½Îªï¿½Ø¼ï¿½ï¿½ï¿½
+    bool lookupKeyword(string targetStr, TokenKind &kind); //²éÕÒÄ¿±ê×Ó×Ö·û´®ÊÇ·ñÎª¹Ø¼ü×Ö
 };
 bool isChar(const char &ch);
 bool isNum(const char &ch);
 bool isOperator(const char &ch);
 bool isCmpOperator(const char &ch);
 
-#endif

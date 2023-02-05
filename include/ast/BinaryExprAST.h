@@ -1,6 +1,3 @@
-#ifndef _BINARYEXPRAST_H
-#define _BINARYEXPRAST_H
-
 #include "ExprAST.h"
 class BinaryExprAST : public ExprAST {
   string Op;
@@ -12,5 +9,3 @@ public:
     : Op(op), LHS(std::move(LHS)), RHS(std::move(RHS)) {}
     ~BinaryExprAST(){}
 };
-
-#endif // !_BINARYEXPRAST_H

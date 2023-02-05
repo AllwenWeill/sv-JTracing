@@ -25,6 +25,10 @@ void Lexer::scanText():
 
 ---------------------------------------------------------------------------------
 Question：
+1. slang的Lexer.cpp中lexStringLiteral()是干什么的？为什么需要stringBuffer
+2. 不明白slang中TokenKind的枚举内容在哪里定义啦？--使用枚举类继承uint32
+3. concatenateToken连接Token的作用是什么？
+4. 如何处理扫描括号类字符？
 5. 如何对关键字即字符类的Token进行具体的TokenKind匹配？(已解决)
 6. 如何区分字符和字符变量和普通变量？(有""的应该是字符，其他是identifier) int a; string b;1+2  i+2
 
