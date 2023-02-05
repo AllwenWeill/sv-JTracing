@@ -4,23 +4,29 @@ SourceManager::SourceManager(fs::path& filepath) :
     m_filepath(filepath)
 {
     readSource(m_filepath);
-    cout << "¹¹ÔìÖÐÏÔÊ¾£º" << endl;
-    cout << fd.filememo << endl;
+    //cout << "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½" << endl;
+    //cout << fd.filememo << endl;
 }
-// function: ¶ÁÈ¡Ô´´úÂë.svÎÄ¼þ
-// param: .svÎÄ¼þµÄÂ·¾¶
+
+SourceManager::SourceManager(const string& codeText)
+{
+    readSource(codeText);
+}
+
+// function: ï¿½ï¿½È¡Ô´ï¿½ï¿½ï¿½ï¿½.svï¿½Ä¼ï¿½
+// param: .svï¿½Ä¼ï¿½ï¿½ï¿½Â·ï¿½ï¿½
 // return: null
 void SourceManager::readSource(fs::path& filepath) {
-    //ÅÐ¶Ï.svÎÄ¼þÂ·¾¶ÊÇ·ñ´æÔÚ
+    //ï¿½Ð¶ï¿½.svï¿½Ä¼ï¿½Â·ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
     if (!fs::exists(filepath)) {
         perror("Error: Invaild filepath.\n");
-        exit(-1); //ÐÞ¸ÄÎªÖØÐÂÊäÈëÂ·¾¶
+        exit(-1); //ï¿½Þ¸ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½
     }
     fd.filename = filepath.filename().string();
-    //¼ì²âºó×ºÈý¸ö×Ö·ûÊÇ·ñÎª".sv"
+    //ï¿½ï¿½ï¿½ï¿½×ºï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½Ç·ï¿½Îª".sv"
     if (fd.filename.substr(fd.filename.size() - 3, fd.filename.size() - 1) != ".sv") {
         perror("Error: Not the .sv file.\n");
-        exit(-1);//ÐÞ¸ÄÎªÖØÐÂÊäÈëÂ·¾¶
+        exit(-1);//ï¿½Þ¸ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½
     }
     fd.filedirectory = filepath.string();
     std::ifstream stream(filepath, std::ios::binary);
@@ -33,5 +39,12 @@ void SourceManager::readSource(fs::path& filepath) {
         exit(-1);
     }
     fd.filememo = string(buffer.begin(), buffer.end());
-    cout << fd.filememo << endl;
+    //cout << fd.filememo << endl;
+}
+
+void SourceManager::readSource(const string& codeText) {
+    fd.filesize = codeText.size();
+    fd.filename = "null";
+    fd.filedirectory = "null";
+    fd.filememo = codeText;
 }

@@ -1,3 +1,6 @@
+#ifndef _CMPEXPRAST_H
+#define _CMPEXPRAST_H
+
 #include "ExprAST.h"
 class CmpExprAST : public ExprAST {
     string Op;
@@ -9,3 +12,5 @@ public:
         : Op(op), LHS(std::move(LHS)), RHS(std::move(RHS)) {}
     ~CmpExprAST() {}
 };
+
+#endif // !_CMPEXPRAST_H
