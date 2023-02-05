@@ -1,3 +1,5 @@
+#ifndef PARSER_H
+#define PARSER_H
 #include "allinclude.h"
 #include "Token.h"
 #include "TokenKind.h"
@@ -17,10 +19,13 @@ public:
     LogParser LogP;
     Token curToken;
     TokenKind curTokenKind;
-    unordered_map<string, VariableInformation> VariableInfo_umap; //±äÁ¿´æ´¢±í
-    unordered_set<TokenKind> Type_uset; //±äÁ¿ÀàÐÍ±í
+    unordered_map<string, VariableInformation> VariableInfo_umap; //ï¿½ï¿½ï¿½ï¿½ï¿½æ´¢ï¿½ï¿½
+    unordered_set<TokenKind> Type_uset; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í±ï¿½
+    std::string showErrorInformation();
+    std::string showParserInformation();
+    std::string showVariableInformation();
 private:
-    VariableInformation VF; //¸ÃVF½á¹¹ÌåÐèÒª²»¶Ï±»¸üÐÂ£¬Éú´æÖÜÆÚÖ±µ½ParserÏú»Ù
+    VariableInformation VF; //ï¿½ï¿½VFï¿½á¹¹ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ï±ï¿½ï¿½ï¿½ï¿½Â£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½Parserï¿½ï¿½ï¿½ï¿½
     unsigned long int m_offset;
     TokenKind variableTypeFlag;
     unordered_map<string, int> BinopPrecedence_umap;
@@ -42,6 +47,7 @@ private:
     std::shared_ptr<Always_ffAST> ParseAlways_ff();
     std::shared_ptr<Always_combAST> ParseAlways_comb();
     std::shared_ptr<InitialAST> ParseInitial();
+    std::shared_ptr<ForAST> ParseFor();
     void mainParser();
     void getNextToken();
     void buildBinopPrecedence();
@@ -51,7 +57,5 @@ private:
     void handlAlways_ff();
     void handlAlways_comb();
     void handInitial();
-    void showErrorInformation();
-    void showParserInformation();
-    void showVariableInformation();
 };
+#endif
