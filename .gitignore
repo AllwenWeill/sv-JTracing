@@ -5,3 +5,4 @@
 /.vs
 /.vscode
 /out/build/x64-debug
+.o
